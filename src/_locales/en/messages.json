@@ -1,0 +1,262 @@
+{
+  "extensionName": {
+    "message": "Smart Page Digest",
+    "description": "Extension display name"
+  },
+  "extensionDescription": {
+    "message": "Summarize, quiz, and ask questions about any web page using Chrome's built-in AI",
+    "description": "Extension description"
+  },
+  "actionTitle": {
+    "message": "Open Summary Panel",
+    "description": "Tooltip for extension icon"
+  },
+  "summarizeButton": {
+    "message": "Summarize this page",
+    "description": "Main action button"
+  },
+  "tldrHeading": {
+    "message": "TL;DR",
+    "description": "TL;DR section heading"
+  },
+  "keyPointsHeading": {
+    "message": "Key Points",
+    "description": "Key points section heading"
+  },
+  "customPromptHeading": {
+    "message": "Ask a question about this page",
+    "description": "Custom prompt section heading"
+  },
+  "customPromptPlaceholder": {
+    "message": "e.g., What are the main arguments? (⌘+Enter to send)",
+    "description": "Custom prompt placeholder text"
+  },
+  "askButton": {
+    "message": "Ask",
+    "description": "Custom prompt submit button"
+  },
+  "langAuto": {
+    "message": "Auto",
+    "description": "Auto-detect language option"
+  },
+  "loading": {
+    "message": "Summarizing...",
+    "description": "Loading state"
+  },
+  "extractingText": {
+    "message": "Extracting page content...",
+    "description": "Text extraction state"
+  },
+  "summarizing": {
+    "message": "Generating summary...",
+    "description": "Summarization state"
+  },
+  "translating": {
+    "message": "Translating...",
+    "description": "Translation in progress state"
+  },
+  "summarizerNotSupported": {
+    "message": "Summarizer API is not supported. Please use Chrome 138 or later.",
+    "description": "Error: API not available"
+  },
+  "summarizerUnavailable": {
+    "message": "AI model is not available. Please enable it in chrome://flags.",
+    "description": "Error: model unavailable"
+  },
+  "modelDownloading": {
+    "message": "AI model will be downloaded on first use. This may take a few minutes.",
+    "description": "Info: model needs download"
+  },
+  "notEnoughText": {
+    "message": "This page doesn't have enough text content to summarize.",
+    "description": "Error: insufficient text"
+  },
+  "inaccessiblePage": {
+    "message": "Cannot access this page. Summary is not available for browser internal pages.",
+    "description": "Error: restricted page"
+  },
+  "noActiveTab": {
+    "message": "No active tab found. Please try again.",
+    "description": "Error: no active tab"
+  },
+  "copied": {
+    "message": "Copied!",
+    "description": "Copy success toast"
+  },
+  "optionsTitle": {
+    "message": "Smart Page Digest Settings",
+    "description": "Options page title"
+  },
+  "optionsSummaryType": {
+    "message": "Summary type",
+    "description": "Summary type setting label"
+  },
+  "optionsSummaryLength": {
+    "message": "Summary length",
+    "description": "Summary length setting label"
+  },
+  "optionsOutputLanguage": {
+    "message": "Default output language",
+    "description": "Output language setting label"
+  },
+  "optionsSummaryFormat": {
+    "message": "Output format",
+    "description": "Summary format setting label"
+  },
+  "optionsCustomPrompt": {
+    "message": "Custom prompt template",
+    "description": "Custom prompt template label"
+  },
+  "optionsSaved": {
+    "message": "Settings saved",
+    "description": "Settings save confirmation"
+  },
+  "optionsReset": {
+    "message": "Reset to defaults",
+    "description": "Reset button label"
+  },
+  "typeBoth": {
+    "message": "TL;DR + Key Points",
+    "description": "Both summary types"
+  },
+  "typeTldr": {
+    "message": "TL;DR only",
+    "description": "TL;DR only"
+  },
+  "typeKeyPoints": {
+    "message": "Key Points only",
+    "description": "Key points only"
+  },
+  "lengthShort": {
+    "message": "Short",
+    "description": "Short length"
+  },
+  "lengthMedium": {
+    "message": "Medium",
+    "description": "Medium length"
+  },
+  "lengthLong": {
+    "message": "Long",
+    "description": "Long length"
+  },
+  "formatMarkdown": {
+    "message": "Markdown",
+    "description": "Markdown format"
+  },
+  "formatPlainText": {
+    "message": "Plain text",
+    "description": "Plain text format"
+  },
+  "optionsAutoSummarize": {
+    "message": "Auto-summarize on tab switch",
+    "description": "Auto-summarize toggle label"
+  },
+  "optionsAutoSummarizeHint": {
+    "message": "Automatically summarize when switching to a different tab while the side panel is open. The panel always auto-summarizes when first opened.",
+    "description": "Auto-summarize hint text"
+  },
+  "commandSummarize": {
+    "message": "Open panel and summarize",
+    "description": "Keyboard shortcut description"
+  },
+  "shortcutHint": {
+    "message": "Shortcut:",
+    "description": "Shortcut hint label in side panel"
+  },
+  "optionsShortcut": {
+    "message": "Keyboard shortcut",
+    "description": "Keyboard shortcut setting label"
+  },
+  "optionsChangeShortcut": {
+    "message": "Change",
+    "description": "Link to change keyboard shortcut"
+  },
+  "optionsShortcutNotSet": {
+    "message": "No shortcut assigned. Click Change to set one.",
+    "description": "Message when no shortcut is set"
+  },
+  "contextMenuSummarize": {
+    "message": "Summarize this page",
+    "description": "Context menu item to summarize the page"
+  },
+  "quizHeading": {
+    "message": "Comprehension Check",
+    "description": "Quiz section heading"
+  },
+  "quizDescription": {
+    "message": "Test your understanding — retrieval practice improves long-term retention by up to 50%.",
+    "description": "Quiz section description based on Roediger & Karpicke (2006)"
+  },
+  "quizGenerateBtn": {
+    "message": "Generate Quiz",
+    "description": "Button to generate comprehension quiz"
+  },
+  "quizAnswerLabel": {
+    "message": "Answer",
+    "description": "Label shown above quiz answer"
+  },
+  "quizTapToReveal": {
+    "message": "Click to reveal answer",
+    "description": "Tooltip for quiz question"
+  },
+  "voiceSelect": {
+    "message": "Voice",
+    "description": "Tooltip for voice selection dropdown"
+  },
+  "voiceDefault": {
+    "message": "Default",
+    "description": "Default voice option label"
+  },
+  "speechSpeed": {
+    "message": "Speech speed",
+    "description": "Tooltip for speech speed button"
+  },
+  "readAloud": {
+    "message": "Read aloud",
+    "description": "Tooltip for read aloud button"
+  },
+  "stopReadAloud": {
+    "message": "Stop reading",
+    "description": "Tooltip for stop reading button"
+  },
+  "translationModelNeeded": {
+    "message": "A one-time translation model download is needed. Future translations will be automatic.",
+    "description": "Banner text when translation model is not yet downloaded"
+  },
+  "downloadAndTranslate": {
+    "message": "Download & Translate",
+    "description": "Button to download translation model and translate results"
+  },
+  "translationComplete": {
+    "message": "Translation complete",
+    "description": "Toast message after successful translation"
+  },
+  "aiFooterText": {
+    "message": "Powered by Gemini Nano — all processing happens on your device. No data is sent to external servers.",
+    "description": "AI privacy info footer in side panel"
+  },
+  "optionsPrivacyHeading": {
+    "message": "Privacy & AI",
+    "description": "Privacy section heading in options"
+  },
+  "optionsPrivacyModel": {
+    "message": "This extension uses Gemini Nano, Chrome's built-in on-device AI model.",
+    "description": "AI model description in options"
+  },
+  "optionsPrivacyLocal": {
+    "message": "All text processing happens locally on your device",
+    "description": "Privacy bullet: local processing"
+  },
+  "optionsPrivacyNoServer": {
+    "message": "No page content is sent to external servers",
+    "description": "Privacy bullet: no server transmission"
+  },
+  "optionsPrivacyNoTraining": {
+    "message": "The AI model does not learn from or store your data",
+    "description": "Privacy bullet: no training on user data"
+  },
+  "optionsPrivacyOffline": {
+    "message": "Works offline after the initial model download",
+    "description": "Privacy bullet: offline capability"
+  }
+}

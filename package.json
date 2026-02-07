@@ -1,0 +1,18 @@
+{
+  "name": "smart-page-digest-extension",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chrome extension: summarize, quiz, and ask questions about any web page using Chrome's built-in AI",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "testMatch": ["**/tests/**/*.test.js"]
+  }
+}

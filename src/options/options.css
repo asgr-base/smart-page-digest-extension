@@ -1,0 +1,212 @@
+:root {
+  --ocs-primary: #1a73e8;
+  --ocs-primary-light: #e8f0fe;
+  --ocs-surface: #ffffff;
+  --ocs-background: #f8f9fa;
+  --ocs-text-primary: #202124;
+  --ocs-text-secondary: #5f6368;
+  --ocs-border: #dadce0;
+  --ocs-success: #34a853;
+  --ocs-error: #d93025;
+  --ocs-radius: 8px;
+  --ocs-font: 'Google Sans', 'Segoe UI', Roboto, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--ocs-font);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ocs-text-primary);
+  background: var(--ocs-background);
+  padding: 24px;
+}
+
+.ocs-options {
+  max-width: 520px;
+  margin: 0 auto;
+  background: var(--ocs-surface);
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.ocs-options h1 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ocs-border);
+}
+
+.ocs-option-group {
+  margin-bottom: 20px;
+}
+
+.ocs-option-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ocs-text-secondary);
+  margin-bottom: 6px;
+}
+
+.ocs-option-group select,
+.ocs-option-group textarea {
+  width: 100%;
+  font-family: var(--ocs-font);
+  font-size: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--ocs-border);
+  border-radius: var(--ocs-radius);
+  background: var(--ocs-surface);
+  color: var(--ocs-text-primary);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.ocs-option-group select:focus,
+.ocs-option-group textarea:focus {
+  border-color: var(--ocs-primary);
+  box-shadow: 0 0 0 2px var(--ocs-primary-light);
+}
+
+.ocs-option-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.ocs-option-checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--ocs-text-primary);
+  margin-bottom: 4px;
+}
+
+.ocs-option-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--ocs-primary);
+  cursor: pointer;
+}
+
+.ocs-option-hint {
+  font-size: 12px;
+  color: var(--ocs-text-secondary);
+  margin-top: 2px;
+  padding-left: 24px;
+}
+
+.ocs-shortcut-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.ocs-shortcut-display kbd {
+  display: inline-block;
+  padding: 4px 10px;
+  font-family: var(--ocs-font);
+  font-size: 14px;
+  color: var(--ocs-text-primary);
+  background: var(--ocs-background);
+  border: 1px solid var(--ocs-border);
+  border-radius: 6px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.ocs-link-btn {
+  font-family: var(--ocs-font);
+  font-size: 13px;
+  color: var(--ocs-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.ocs-link-btn:hover {
+  color: #1557b0;
+}
+
+.ocs-option-actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ocs-reset-btn {
+  font-family: var(--ocs-font);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border: 1px solid var(--ocs-border);
+  border-radius: var(--ocs-radius);
+  background: var(--ocs-surface);
+  color: var(--ocs-text-secondary);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ocs-reset-btn:hover {
+  background: var(--ocs-background);
+}
+
+.ocs-status-message {
+  margin-top: 16px;
+  padding: 10px 14px;
+  font-size: 13px;
+  border-radius: var(--ocs-radius);
+}
+
+.ocs-status-message.ocs-success {
+  background: #e6f4ea;
+  color: var(--ocs-success);
+}
+
+.ocs-status-message.ocs-error {
+  background: #fce8e6;
+  color: var(--ocs-error);
+}
+
+/* Privacy Info */
+.ocs-privacy-details {
+  margin-top: 4px;
+  padding: 12px 14px;
+  background: var(--ocs-background);
+  border: 1px solid var(--ocs-border);
+  border-radius: var(--ocs-radius);
+}
+
+.ocs-privacy-details p {
+  font-size: 13px;
+  color: var(--ocs-text-primary);
+  margin-bottom: 8px;
+}
+
+.ocs-privacy-details ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.ocs-privacy-details li {
+  font-size: 12px;
+  color: var(--ocs-text-secondary);
+  margin-bottom: 3px;
+  line-height: 1.5;
+}
+
+.ocs-hidden { display: none !important; }
+
+.ocs-version {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--ocs-text-secondary);
+}

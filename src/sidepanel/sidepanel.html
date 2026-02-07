@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Page Digest</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <!-- Header -->
+  <div class="ocs-header">
+    <div class="ocs-header-left">
+      <img src="../icons/icon16.png" alt="" class="ocs-header-icon">
+      <h1 data-i18n="extensionName">Smart Page Digest</h1>
+    </div>
+    <div class="ocs-header-right">
+      <select id="langSelect" class="ocs-lang-select" title="Output language">
+        <option value="auto" data-i18n="langAuto">Auto</option>
+        <option value="ja">日本語</option>
+        <option value="en">English</option>
+        <option value="es">Español</option>
+      </select>
+      <select id="voiceSelect" class="ocs-voice-select" data-i18n-title="voiceSelect" title="Voice">
+        <option value="">Default</option>
+      </select>
+      <button id="speechSpeedBtn" class="ocs-speed-btn" data-i18n-title="speechSpeed" title="Speech speed">1x</button>
+      <button id="settingsBtn" class="ocs-icon-btn" title="Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Status Banner -->
+  <div id="statusBanner" class="ocs-status-banner ocs-hidden"></div>
+
+  <!-- Page Info -->
+  <div id="pageInfo" class="ocs-page-info ocs-hidden">
+    <div class="ocs-page-info-row">
+      <span id="pageTitle" class="ocs-page-title"></span>
+      <button id="copyPageInfoBtn" class="ocs-copy-btn ocs-page-copy-btn" title="Copy as Markdown link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+        </svg>
+      </button>
+    </div>
+    <span id="charCount" class="ocs-char-count"></span>
+  </div>
+
+  <!-- Main Action -->
+  <div class="ocs-action-area">
+    <button id="summarizeBtn" class="ocs-primary-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+      </svg>
+      <span data-i18n="summarizeButton">Summarize this page</span>
+    </button>
+    <p id="shortcutHint" class="ocs-shortcut-hint"></p>
+  </div>
+
+  <!-- Summary Results -->
+  <div id="resultsArea" class="ocs-results ocs-hidden">
+    <!-- TL;DR Section -->
+    <div class="ocs-result-section" id="tldrSection">
+      <div class="ocs-section-header">
+        <h2 data-i18n="tldrHeading">TL;DR</h2>
+        <div class="ocs-section-actions">
+          <button class="ocs-read-aloud-btn" data-target="tldrContent" data-i18n-title="readAloud" title="Read aloud">
+            <svg class="ocs-icon-play" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"></path>
+            </svg>
+            <svg class="ocs-icon-stop ocs-hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+            </svg>
+          </button>
+          <button class="ocs-copy-btn" data-target="tldrContent" title="Copy">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div id="tldrContent" class="ocs-content"></div>
+    </div>
+
+    <!-- Key Points Section -->
+    <div class="ocs-result-section" id="keyPointsSection">
+      <div class="ocs-section-header">
+        <h2 data-i18n="keyPointsHeading">Key Points</h2>
+        <div class="ocs-section-actions">
+          <button class="ocs-read-aloud-btn" data-target="keyPointsContent" data-i18n-title="readAloud" title="Read aloud">
+            <svg class="ocs-icon-play" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"></path>
+            </svg>
+            <svg class="ocs-icon-stop ocs-hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+            </svg>
+          </button>
+          <button class="ocs-copy-btn" data-target="keyPointsContent" title="Copy">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div id="keyPointsContent" class="ocs-content"></div>
+    </div>
+  </div>
+
+  <!-- Quiz Section (Research-based: Roediger & Karpicke 2006, Dunlosky et al. 2013) -->
+  <div id="quizSection" class="ocs-quiz-section">
+    <div class="ocs-result-section">
+      <div class="ocs-section-header">
+        <h2 data-i18n="quizHeading">Comprehension Check</h2>
+      </div>
+      <p class="ocs-quiz-description" data-i18n="quizDescription">Test your understanding — retrieval practice improves long-term retention by up to 50%.</p>
+      <button id="generateQuizBtn" class="ocs-secondary-btn ocs-quiz-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <span data-i18n="quizGenerateBtn">Generate Quiz</span>
+      </button>
+      <div id="quizContent" class="ocs-quiz-content"></div>
+    </div>
+  </div>
+
+  <!-- Custom Prompt Section (Chat UI) -->
+  <div class="ocs-custom-prompt">
+    <details id="customPromptDetails">
+      <summary data-i18n="customPromptHeading">Ask a question about this page</summary>
+      <div id="chatHistory" class="ocs-chat-history"></div>
+      <div class="ocs-prompt-input-area">
+        <textarea id="customPromptInput" rows="2" data-i18n-placeholder="customPromptPlaceholder" placeholder="e.g., What are the main arguments?"></textarea>
+        <button id="customPromptBtn" class="ocs-secondary-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+          <span data-i18n="askButton">Ask</span>
+        </button>
+      </div>
+    </details>
+  </div>
+
+  <!-- AI Info Footer -->
+  <div class="ocs-ai-footer">
+    <div class="ocs-ai-footer-icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      </svg>
+    </div>
+    <p data-i18n="aiFooterText">Powered by Gemini Nano — all processing happens on your device. No data is sent to external servers.</p>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="ocs-loading ocs-hidden">
+    <div class="ocs-spinner"></div>
+    <p id="loadingText" data-i18n="loading">Summarizing...</p>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="ocs-toast ocs-hidden"></div>
+
+  <script src="../config.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>

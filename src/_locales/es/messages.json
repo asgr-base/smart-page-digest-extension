@@ -1,0 +1,262 @@
+{
+  "extensionName": {
+    "message": "Smart Page Digest",
+    "description": "Nombre de la extensión"
+  },
+  "extensionDescription": {
+    "message": "Resume, genera quiz y responde preguntas sobre cualquier página web con la IA integrada de Chrome",
+    "description": "Descripción de la extensión"
+  },
+  "actionTitle": {
+    "message": "Abrir panel de resumen",
+    "description": "Tooltip del icono de la extensión"
+  },
+  "summarizeButton": {
+    "message": "Resumir esta página",
+    "description": "Botón de acción principal"
+  },
+  "tldrHeading": {
+    "message": "TL;DR",
+    "description": "Encabezado de la sección TL;DR"
+  },
+  "keyPointsHeading": {
+    "message": "Puntos clave",
+    "description": "Encabezado de la sección de puntos clave"
+  },
+  "customPromptHeading": {
+    "message": "Hacer una pregunta sobre esta página",
+    "description": "Encabezado de la sección de prompt personalizado"
+  },
+  "customPromptPlaceholder": {
+    "message": "Ej.: ¿Cuáles son los argumentos principales? (⌘+Enter para enviar)",
+    "description": "Texto de ejemplo del prompt personalizado"
+  },
+  "askButton": {
+    "message": "Preguntar",
+    "description": "Botón de envío del prompt personalizado"
+  },
+  "langAuto": {
+    "message": "Auto",
+    "description": "Opción de detección automática de idioma"
+  },
+  "loading": {
+    "message": "Resumiendo...",
+    "description": "Estado de carga"
+  },
+  "extractingText": {
+    "message": "Extrayendo contenido de la página...",
+    "description": "Estado de extracción de texto"
+  },
+  "summarizing": {
+    "message": "Generando resumen...",
+    "description": "Estado de resumen"
+  },
+  "translating": {
+    "message": "Traduciendo...",
+    "description": "Estado de traducción en progreso"
+  },
+  "summarizerNotSupported": {
+    "message": "La API de Summarizer no está disponible. Por favor, usa Chrome 138 o posterior.",
+    "description": "Error: API no disponible"
+  },
+  "summarizerUnavailable": {
+    "message": "El modelo de IA no está disponible. Por favor, actívalo en chrome://flags.",
+    "description": "Error: modelo no disponible"
+  },
+  "modelDownloading": {
+    "message": "El modelo de IA se descargará en el primer uso. Esto puede tardar unos minutos.",
+    "description": "Info: descarga del modelo necesaria"
+  },
+  "notEnoughText": {
+    "message": "Esta página no tiene suficiente contenido de texto para resumir.",
+    "description": "Error: texto insuficiente"
+  },
+  "inaccessiblePage": {
+    "message": "No se puede acceder a esta página. El resumen no está disponible para páginas internas del navegador.",
+    "description": "Error: página restringida"
+  },
+  "noActiveTab": {
+    "message": "No se encontró ninguna pestaña activa. Por favor, inténtalo de nuevo.",
+    "description": "Error: sin pestaña activa"
+  },
+  "copied": {
+    "message": "¡Copiado!",
+    "description": "Notificación de copia exitosa"
+  },
+  "optionsTitle": {
+    "message": "Configuración de Smart Page Digest",
+    "description": "Título de la página de configuración"
+  },
+  "optionsSummaryType": {
+    "message": "Tipo de resumen",
+    "description": "Etiqueta de configuración del tipo de resumen"
+  },
+  "optionsSummaryLength": {
+    "message": "Longitud del resumen",
+    "description": "Etiqueta de configuración de longitud"
+  },
+  "optionsOutputLanguage": {
+    "message": "Idioma de salida predeterminado",
+    "description": "Etiqueta de configuración del idioma de salida"
+  },
+  "optionsSummaryFormat": {
+    "message": "Formato de salida",
+    "description": "Etiqueta de configuración del formato"
+  },
+  "optionsCustomPrompt": {
+    "message": "Plantilla de prompt personalizado",
+    "description": "Etiqueta de la plantilla de prompt personalizado"
+  },
+  "optionsSaved": {
+    "message": "Configuración guardada",
+    "description": "Confirmación de guardado"
+  },
+  "optionsReset": {
+    "message": "Restablecer valores predeterminados",
+    "description": "Etiqueta del botón de restablecimiento"
+  },
+  "typeBoth": {
+    "message": "TL;DR + Puntos clave",
+    "description": "Ambos tipos de resumen"
+  },
+  "typeTldr": {
+    "message": "Solo TL;DR",
+    "description": "Solo TL;DR"
+  },
+  "typeKeyPoints": {
+    "message": "Solo puntos clave",
+    "description": "Solo puntos clave"
+  },
+  "lengthShort": {
+    "message": "Corto",
+    "description": "Longitud corta"
+  },
+  "lengthMedium": {
+    "message": "Medio",
+    "description": "Longitud media"
+  },
+  "lengthLong": {
+    "message": "Largo",
+    "description": "Longitud larga"
+  },
+  "formatMarkdown": {
+    "message": "Markdown",
+    "description": "Formato Markdown"
+  },
+  "formatPlainText": {
+    "message": "Texto plano",
+    "description": "Formato de texto plano"
+  },
+  "optionsAutoSummarize": {
+    "message": "Resumir automáticamente al cambiar de pestaña",
+    "description": "Etiqueta del interruptor de resumen automático"
+  },
+  "optionsAutoSummarizeHint": {
+    "message": "Resumir automáticamente al cambiar a otra pestaña mientras el panel lateral está abierto. El panel siempre resume automáticamente cuando se abre por primera vez.",
+    "description": "Texto de ayuda del resumen automático"
+  },
+  "commandSummarize": {
+    "message": "Abrir panel y resumir",
+    "description": "Descripción del atajo de teclado"
+  },
+  "shortcutHint": {
+    "message": "Atajo:",
+    "description": "Etiqueta de atajo en el panel lateral"
+  },
+  "optionsShortcut": {
+    "message": "Atajo de teclado",
+    "description": "Etiqueta de configuración del atajo de teclado"
+  },
+  "optionsChangeShortcut": {
+    "message": "Cambiar",
+    "description": "Enlace para cambiar el atajo de teclado"
+  },
+  "optionsShortcutNotSet": {
+    "message": "No hay atajo asignado. Haz clic en Cambiar para configurar uno.",
+    "description": "Mensaje cuando no hay atajo configurado"
+  },
+  "contextMenuSummarize": {
+    "message": "Resumir esta página",
+    "description": "Elemento del menú contextual para resumir la página"
+  },
+  "quizHeading": {
+    "message": "Verificación de comprensión",
+    "description": "Encabezado de la sección de quiz"
+  },
+  "quizDescription": {
+    "message": "Pon a prueba tu comprensión — la práctica de recuperación mejora la retención a largo plazo hasta un 50%.",
+    "description": "Descripción de la sección de quiz basada en Roediger & Karpicke (2006)"
+  },
+  "quizGenerateBtn": {
+    "message": "Generar quiz",
+    "description": "Botón para generar quiz de comprensión"
+  },
+  "quizAnswerLabel": {
+    "message": "Respuesta",
+    "description": "Etiqueta mostrada sobre la respuesta del quiz"
+  },
+  "quizTapToReveal": {
+    "message": "Haz clic para ver la respuesta",
+    "description": "Tooltip para la pregunta del quiz"
+  },
+  "voiceSelect": {
+    "message": "Voz",
+    "description": "Tooltip del menú de selección de voz"
+  },
+  "voiceDefault": {
+    "message": "Predeterminada",
+    "description": "Etiqueta de la opción de voz predeterminada"
+  },
+  "speechSpeed": {
+    "message": "Velocidad de lectura",
+    "description": "Tooltip del botón de velocidad de lectura"
+  },
+  "readAloud": {
+    "message": "Leer en voz alta",
+    "description": "Tooltip del botón de lectura en voz alta"
+  },
+  "stopReadAloud": {
+    "message": "Detener lectura",
+    "description": "Tooltip del botón de detener lectura"
+  },
+  "translationModelNeeded": {
+    "message": "Se necesita descargar el modelo de traducción (solo la primera vez). Las próximas traducciones serán automáticas.",
+    "description": "Texto del banner cuando el modelo de traducción no está descargado"
+  },
+  "downloadAndTranslate": {
+    "message": "Descargar y traducir",
+    "description": "Botón para descargar el modelo de traducción y traducir"
+  },
+  "translationComplete": {
+    "message": "Traducción completada",
+    "description": "Mensaje de confirmación tras la traducción"
+  },
+  "aiFooterText": {
+    "message": "Desarrollado con Gemini Nano — todo el procesamiento ocurre en tu dispositivo. No se envían datos a servidores externos.",
+    "description": "Información de privacidad del AI en el panel lateral"
+  },
+  "optionsPrivacyHeading": {
+    "message": "Privacidad e IA",
+    "description": "Encabezado de la sección de privacidad en configuración"
+  },
+  "optionsPrivacyModel": {
+    "message": "Esta extensión utiliza Gemini Nano, el modelo de IA integrado en Chrome que funciona en tu dispositivo.",
+    "description": "Descripción del modelo de IA en configuración"
+  },
+  "optionsPrivacyLocal": {
+    "message": "Todo el procesamiento de texto ocurre localmente en tu dispositivo",
+    "description": "Elemento de privacidad: procesamiento local"
+  },
+  "optionsPrivacyNoServer": {
+    "message": "El contenido de la página no se envía a servidores externos",
+    "description": "Elemento de privacidad: sin transmisión a servidores"
+  },
+  "optionsPrivacyNoTraining": {
+    "message": "El modelo de IA no aprende ni almacena tus datos",
+    "description": "Elemento de privacidad: sin entrenamiento con datos del usuario"
+  },
+  "optionsPrivacyOffline": {
+    "message": "Funciona sin conexión después de la descarga inicial del modelo",
+    "description": "Elemento de privacidad: capacidad sin conexión"
+  }
+}

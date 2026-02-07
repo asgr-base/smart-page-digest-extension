@@ -1,0 +1,262 @@
+{
+  "extensionName": {
+    "message": "Smart Page Digest",
+    "description": "拡張機能名"
+  },
+  "extensionDescription": {
+    "message": "Chrome内蔵AIでWebページを要約・クイズ・質問 — すべてオンデバイスで処理",
+    "description": "拡張機能の説明"
+  },
+  "actionTitle": {
+    "message": "要約パネルを開く",
+    "description": "拡張機能アイコンのツールチップ"
+  },
+  "summarizeButton": {
+    "message": "このページを要約する",
+    "description": "メインアクションボタン"
+  },
+  "tldrHeading": {
+    "message": "TL;DR",
+    "description": "TL;DRセクション見出し"
+  },
+  "keyPointsHeading": {
+    "message": "主要ポイント",
+    "description": "主要ポイントセクション見出し"
+  },
+  "customPromptHeading": {
+    "message": "このページについて質問する",
+    "description": "カスタムプロンプトセクション見出し"
+  },
+  "customPromptPlaceholder": {
+    "message": "例：主な論点は何ですか？（⌘+Enterで送信）",
+    "description": "カスタムプロンプトのプレースホルダー"
+  },
+  "askButton": {
+    "message": "質問する",
+    "description": "カスタムプロンプト送信ボタン"
+  },
+  "langAuto": {
+    "message": "自動",
+    "description": "言語自動検出オプション"
+  },
+  "loading": {
+    "message": "要約中...",
+    "description": "ローディング状態"
+  },
+  "extractingText": {
+    "message": "ページ内容を抽出中...",
+    "description": "テキスト抽出状態"
+  },
+  "summarizing": {
+    "message": "要約を生成中...",
+    "description": "要約生成状態"
+  },
+  "translating": {
+    "message": "翻訳中...",
+    "description": "翻訳処理中状態"
+  },
+  "summarizerNotSupported": {
+    "message": "Summarizer APIがサポートされていません。Chrome 138以降をご使用ください。",
+    "description": "エラー：API非対応"
+  },
+  "summarizerUnavailable": {
+    "message": "AIモデルが利用できません。chrome://flagsで有効にしてください。",
+    "description": "エラー：モデル利用不可"
+  },
+  "modelDownloading": {
+    "message": "AIモデルは初回使用時にダウンロードされます。数分かかる場合があります。",
+    "description": "情報：モデルダウンロード必要"
+  },
+  "notEnoughText": {
+    "message": "このページには要約するのに十分なテキストがありません。",
+    "description": "エラー：テキスト不足"
+  },
+  "inaccessiblePage": {
+    "message": "このページにはアクセスできません。ブラウザの内部ページでは要約は利用できません。",
+    "description": "エラー：アクセス制限ページ"
+  },
+  "noActiveTab": {
+    "message": "アクティブなタブが見つかりません。再度お試しください。",
+    "description": "エラー：アクティブタブなし"
+  },
+  "copied": {
+    "message": "コピーしました！",
+    "description": "コピー成功トースト"
+  },
+  "optionsTitle": {
+    "message": "Smart Page Digest 設定",
+    "description": "設定ページタイトル"
+  },
+  "optionsSummaryType": {
+    "message": "要約タイプ",
+    "description": "要約タイプ設定ラベル"
+  },
+  "optionsSummaryLength": {
+    "message": "要約の長さ",
+    "description": "要約の長さ設定ラベル"
+  },
+  "optionsOutputLanguage": {
+    "message": "デフォルト出力言語",
+    "description": "出力言語設定ラベル"
+  },
+  "optionsSummaryFormat": {
+    "message": "出力形式",
+    "description": "要約形式設定ラベル"
+  },
+  "optionsCustomPrompt": {
+    "message": "カスタムプロンプトテンプレート",
+    "description": "カスタムプロンプトテンプレートラベル"
+  },
+  "optionsSaved": {
+    "message": "設定を保存しました",
+    "description": "設定保存確認"
+  },
+  "optionsReset": {
+    "message": "デフォルトに戻す",
+    "description": "リセットボタンラベル"
+  },
+  "typeBoth": {
+    "message": "TL;DR + 主要ポイント",
+    "description": "両方の要約タイプ"
+  },
+  "typeTldr": {
+    "message": "TL;DRのみ",
+    "description": "TL;DRのみ"
+  },
+  "typeKeyPoints": {
+    "message": "主要ポイントのみ",
+    "description": "主要ポイントのみ"
+  },
+  "lengthShort": {
+    "message": "短い",
+    "description": "短い長さ"
+  },
+  "lengthMedium": {
+    "message": "標準",
+    "description": "標準の長さ"
+  },
+  "lengthLong": {
+    "message": "長い",
+    "description": "長い長さ"
+  },
+  "formatMarkdown": {
+    "message": "Markdown",
+    "description": "Markdown形式"
+  },
+  "formatPlainText": {
+    "message": "プレーンテキスト",
+    "description": "プレーンテキスト形式"
+  },
+  "optionsAutoSummarize": {
+    "message": "タブ切り替え時に自動で要約する",
+    "description": "自動要約トグルラベル"
+  },
+  "optionsAutoSummarizeHint": {
+    "message": "サイドパネルを開いた状態で別のタブに切り替えたとき、自動的に要約を開始します。パネルを最初に開いたときは常に自動要約されます。",
+    "description": "自動要約ヒントテキスト"
+  },
+  "commandSummarize": {
+    "message": "パネルを開いて要約する",
+    "description": "キーボードショートカットの説明"
+  },
+  "shortcutHint": {
+    "message": "ショートカット:",
+    "description": "サイドパネルのショートカットヒント"
+  },
+  "optionsShortcut": {
+    "message": "キーボードショートカット",
+    "description": "キーボードショートカット設定ラベル"
+  },
+  "optionsChangeShortcut": {
+    "message": "変更",
+    "description": "ショートカット変更リンク"
+  },
+  "optionsShortcutNotSet": {
+    "message": "ショートカットが未設定です。「変更」をクリックして設定してください。",
+    "description": "ショートカット未設定メッセージ"
+  },
+  "contextMenuSummarize": {
+    "message": "このページを要約する",
+    "description": "コンテキストメニューの要約項目"
+  },
+  "quizHeading": {
+    "message": "理解度チェック",
+    "description": "クイズセクション見出し"
+  },
+  "quizDescription": {
+    "message": "理解度をテストしましょう — 検索練習により長期記憶の定着率が最大50%向上します。",
+    "description": "Roediger & Karpicke (2006) に基づくクイズセクション説明"
+  },
+  "quizGenerateBtn": {
+    "message": "クイズを生成",
+    "description": "理解度クイズ生成ボタン"
+  },
+  "quizAnswerLabel": {
+    "message": "答え",
+    "description": "クイズの答えのラベル"
+  },
+  "quizTapToReveal": {
+    "message": "クリックして答えを表示",
+    "description": "クイズ質問のツールチップ"
+  },
+  "voiceSelect": {
+    "message": "音声",
+    "description": "音声選択ドロップダウンのツールチップ"
+  },
+  "voiceDefault": {
+    "message": "デフォルト",
+    "description": "デフォルト音声オプションのラベル"
+  },
+  "speechSpeed": {
+    "message": "読み上げ速度",
+    "description": "読み上げ速度ボタンのツールチップ"
+  },
+  "readAloud": {
+    "message": "読み上げ",
+    "description": "読み上げボタンのツールチップ"
+  },
+  "stopReadAloud": {
+    "message": "読み上げ停止",
+    "description": "読み上げ停止ボタンのツールチップ"
+  },
+  "translationModelNeeded": {
+    "message": "翻訳モデルのダウンロードが必要です（初回のみ）。次回以降は自動で翻訳されます。",
+    "description": "翻訳モデル未ダウンロード時のバナーテキスト"
+  },
+  "downloadAndTranslate": {
+    "message": "ダウンロードして翻訳",
+    "description": "翻訳モデルダウンロード＆翻訳実行ボタン"
+  },
+  "translationComplete": {
+    "message": "翻訳が完了しました",
+    "description": "翻訳成功時のトースト"
+  },
+  "aiFooterText": {
+    "message": "Gemini Nano（Chrome内蔵AI）を使用 — すべての処理はお使いのデバイス上で行われます。外部サーバーへのデータ送信はありません。",
+    "description": "サイドパネルのAIプライバシー情報フッター"
+  },
+  "optionsPrivacyHeading": {
+    "message": "プライバシーとAI",
+    "description": "設定ページのプライバシーセクション見出し"
+  },
+  "optionsPrivacyModel": {
+    "message": "この拡張機能はChrome内蔵のオンデバイスAIモデル「Gemini Nano」を使用しています。",
+    "description": "設定ページのAIモデル説明"
+  },
+  "optionsPrivacyLocal": {
+    "message": "すべてのテキスト処理はお使いのデバイス上でローカルに行われます",
+    "description": "プライバシー項目：ローカル処理"
+  },
+  "optionsPrivacyNoServer": {
+    "message": "ページの内容が外部サーバーに送信されることはありません",
+    "description": "プライバシー項目：サーバー送信なし"
+  },
+  "optionsPrivacyNoTraining": {
+    "message": "AIモデルがユーザーのデータを学習・保存することはありません",
+    "description": "プライバシー項目：学習なし"
+  },
+  "optionsPrivacyOffline": {
+    "message": "初回のモデルダウンロード後はオフラインでも動作します",
+    "description": "プライバシー項目：オフライン対応"
+  }
+}

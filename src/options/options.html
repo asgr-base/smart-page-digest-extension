@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="optionsTitle">Smart Page Digest Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="ocs-options">
+    <h1 data-i18n="optionsTitle">Smart Page Digest Settings</h1>
+
+    <!-- Summary Type -->
+    <div class="ocs-option-group">
+      <label data-i18n="optionsSummaryType">Summary type</label>
+      <select id="summaryType">
+        <option value="both" data-i18n="typeBoth">TL;DR + Key Points</option>
+        <option value="tldr" data-i18n="typeTldr">TL;DR only</option>
+        <option value="key-points" data-i18n="typeKeyPoints">Key Points only</option>
+      </select>
+    </div>
+
+    <!-- Summary Length -->
+    <div class="ocs-option-group">
+      <label data-i18n="optionsSummaryLength">Summary length</label>
+      <select id="summaryLength">
+        <option value="short" data-i18n="lengthShort">Short</option>
+        <option value="medium" data-i18n="lengthMedium">Medium</option>
+        <option value="long" data-i18n="lengthLong">Long</option>
+      </select>
+    </div>
+
+    <!-- Output Language -->
+    <div class="ocs-option-group">
+      <label data-i18n="optionsOutputLanguage">Default output language</label>
+      <select id="outputLanguage">
+        <option value="auto" data-i18n="langAuto">Auto</option>
+        <option value="ja">日本語</option>
+        <option value="en">English</option>
+        <option value="es">Español</option>
+      </select>
+    </div>
+
+    <!-- Auto Summarize -->
+    <div class="ocs-option-group ocs-option-checkbox">
+      <label>
+        <input type="checkbox" id="autoSummarize">
+        <span data-i18n="optionsAutoSummarize">Auto-summarize when panel opens</span>
+      </label>
+      <p class="ocs-option-hint" data-i18n="optionsAutoSummarizeHint">Start summarization automatically when clicking the extension icon or pressing the keyboard shortcut</p>
+    </div>
+
+    <!-- Keyboard Shortcut -->
+    <div class="ocs-option-group ocs-option-shortcut">
+      <label data-i18n="optionsShortcut">Keyboard shortcut</label>
+      <div class="ocs-shortcut-display">
+        <kbd id="shortcutKey"></kbd>
+        <button id="changeShortcutBtn" class="ocs-link-btn" data-i18n="optionsChangeShortcut">Change</button>
+      </div>
+      <p class="ocs-option-hint" id="shortcutNotSet" data-i18n="optionsShortcutNotSet" style="display:none">No shortcut assigned</p>
+    </div>
+
+    <!-- Custom Prompt Template -->
+    <div class="ocs-option-group">
+      <label data-i18n="optionsCustomPrompt">Custom prompt template</label>
+      <textarea id="customPromptTemplate" rows="4" placeholder="Leave empty to use default prompts"></textarea>
+    </div>
+
+    <!-- Privacy & AI Info -->
+    <div class="ocs-option-group ocs-privacy-info">
+      <label data-i18n="optionsPrivacyHeading">Privacy & AI</label>
+      <div class="ocs-privacy-details">
+        <p data-i18n="optionsPrivacyModel">This extension uses Gemini Nano, Chrome's built-in on-device AI model.</p>
+        <ul>
+          <li data-i18n="optionsPrivacyLocal">All text processing happens locally on your device</li>
+          <li data-i18n="optionsPrivacyNoServer">No page content is sent to external servers</li>
+          <li data-i18n="optionsPrivacyNoTraining">The AI model does not learn from or store your data</li>
+          <li data-i18n="optionsPrivacyOffline">Works offline after the initial model download</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="ocs-option-actions">
+      <button id="resetBtn" class="ocs-reset-btn" data-i18n="optionsReset">Reset to defaults</button>
+    </div>
+
+    <!-- Status -->
+    <div id="statusMessage" class="ocs-status-message ocs-hidden"></div>
+
+    <!-- Version -->
+    <div class="ocs-version">v1.0.0</div>
+  </div>
+
+  <script src="../config.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
