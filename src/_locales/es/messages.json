@@ -212,8 +212,8 @@
     "description": "Encabezado de la sección de diálogo"
   },
   "dialogueDescription": {
-    "message": "Comprende a través de una conversación atractiva — personajes dinámicos dan vida al contenido.",
-    "description": "Descripción de la sección de diálogo"
+    "message": "Comprende a través de una conversación atractiva — el formato de diálogo reduce la carga cognitiva y mejora la comprensión.",
+    "description": "Descripción de la sección de diálogo basada en Xu et al. (2022) e investigación sobre storytelling"
   },
   "dialogueGenerateBtn": {
     "message": "Generar diálogo",
