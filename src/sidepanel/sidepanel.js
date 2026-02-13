@@ -564,6 +564,12 @@
         }
         tabCache[tldrGeneratingTabId].tldr = tldrResult;
         console.log('[Cache] TL;DR saved for tab', tldrGeneratingTabId, 'length:', tldrResult ? tldrResult.length : 0);
+
+        // If user switched tabs during generation, clear the UI (result is in cache only)
+        if (currentTabId !== tldrGeneratingTabId) {
+          console.log('[Cache] User switched tabs during TL;DR generation - clearing UI');
+          clearElement(el.tldrContent);
+        }
       }
     } catch (err) {
       // Check for abort-related errors (name or message contains 'abort')
@@ -665,6 +671,12 @@
             }
             tabCache[keyPointsGeneratingTabId].keyPoints = keyPointsResult;
             console.log('[Cache] Key Points saved for tab', keyPointsGeneratingTabId, 'length:', keyPointsResult ? keyPointsResult.length : 0);
+
+            // If user switched tabs during generation, clear the UI (result is in cache only)
+            if (currentTabId !== keyPointsGeneratingTabId) {
+              console.log('[Cache] User switched tabs during Key Points generation - clearing UI');
+              clearElement(el.keyPointsContent);
+            }
           }
         } catch (err) {
           if (err.message === 'AbortError') {
@@ -694,6 +706,12 @@
               };
             }
             tabCache[keyPointsGeneratingTabId].keyPoints = kpResult;
+
+            // If user switched tabs during generation, clear the UI (result is in cache only)
+            if (currentTabId !== keyPointsGeneratingTabId) {
+              console.log('[Cache] User switched tabs during Key Points generation (fallback) - clearing UI');
+              clearElement(el.keyPointsContent);
+            }
           }
         }
       } else {
@@ -720,6 +738,12 @@
             };
           }
           tabCache[keyPointsGeneratingTabId].keyPoints = kpResult;
+
+          // If user switched tabs during generation, clear the UI (result is in cache only)
+          if (currentTabId !== keyPointsGeneratingTabId) {
+            console.log('[Cache] User switched tabs during Key Points generation (no Prompt API) - clearing UI');
+            clearElement(el.keyPointsContent);
+          }
         }
       }
     } catch (err) {
@@ -1379,6 +1403,12 @@
         var result = await session.prompt(prompt, { signal: quizAbortController.signal });
         if (result) {
           renderQuiz(result);
+
+          // If user switched tabs during generation, clear the UI
+          if (currentTabId !== quizGeneratingTabId) {
+            console.log('[Quiz] User switched tabs during generation - clearing UI');
+            clearElement(el.quizContent);
+          }
         }
       } finally {
         session.destroy();
@@ -1573,6 +1603,12 @@
           // Update cache (use the tab ID recorded at generation start, not current tab)
           if (dialogueGeneratingTabId && tabCache[dialogueGeneratingTabId]) {
             tabCache[dialogueGeneratingTabId].dialogue = result;
+          }
+
+          // If user switched tabs during generation, clear the UI (result is in cache only)
+          if (currentTabId !== dialogueGeneratingTabId) {
+            console.log('[Dialogue] User switched tabs during generation - clearing UI');
+            clearElement(el.dialogueContent);
           }
         }
       } finally {
@@ -1785,6 +1821,17 @@
         responseContent.textContent = getErrorMessage(err);
       }
     } finally {
+      // If user switched tabs during generation, remove both user and assistant bubbles
+      if (customPromptGeneratingTabId && currentTabId !== customPromptGeneratingTabId) {
+        console.log('[CustomPrompt] User switched tabs during generation - removing chat bubbles');
+        if (assistantBubble && assistantBubble.parentNode) {
+          assistantBubble.parentNode.removeChild(assistantBubble);
+        }
+        if (userBubble && userBubble.parentNode) {
+          userBubble.parentNode.removeChild(userBubble);
+        }
+      }
+
       el.customPromptBtn.querySelector('span').textContent = chrome.i18n.getMessage('askButton') || 'Ask';
       el.customPromptBtn.disabled = false;
       isAnsweringCustomPrompt = false;
