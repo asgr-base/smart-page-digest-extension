@@ -9,7 +9,6 @@
   // --- State ---
   var currentSettings = Object.assign({}, config.DEFAULT_SETTINGS);
   var extractedPageData = null;
-  var isSummarizing = false;
   var currentTabId = null;
   var tabCache = {}; // { tabId: { pageData, summaryType, tldr, keyPoints } }
 
@@ -450,7 +449,9 @@
     currentTabId = tabId;
     syncZoomWithTab(tabId);
 
-    if (isSummarizing) return; // Don't interrupt active summarization
+    // Don't interrupt active generation - preserve UI state
+    var isGenerating = isSummarizingTldr || isSummarizingKeyPoints || isGeneratingQuiz || isGeneratingDialogue || isAnsweringCustomPrompt;
+    if (isGenerating) return;
 
     // Check if the new tab's URL is accessible before doing anything
     var accessible = await updateTabAccessibility(tabId);
