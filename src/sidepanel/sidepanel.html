@@ -50,19 +50,8 @@
     <span id="charCount" class="ocs-char-count"></span>
   </div>
 
-  <!-- Main Action -->
-  <div class="ocs-action-area">
-    <button id="summarizeBtn" class="ocs-primary-btn">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-      </svg>
-      <span data-i18n="summarizeButton">Summarize this page</span>
-    </button>
-    <p id="shortcutHint" class="ocs-shortcut-hint"></p>
-  </div>
-
   <!-- Summary Results -->
-  <div id="resultsArea" class="ocs-results ocs-hidden">
+  <div id="resultsArea" class="ocs-results">
     <!-- TL;DR Section -->
     <div class="ocs-result-section" id="tldrSection">
       <div class="ocs-section-header">
@@ -85,6 +74,16 @@
           </button>
         </div>
       </div>
+      <button id="generateTldrBtn" class="ocs-secondary-btn ocs-summary-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span data-i18n="generateTldrBtn">Generate TL;DR</span>
+      </button>
       <div id="tldrContent" class="ocs-content"></div>
     </div>
 
@@ -110,6 +109,17 @@
           </button>
         </div>
       </div>
+      <button id="generateKeyPointsBtn" class="ocs-secondary-btn ocs-summary-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="8" y1="6" x2="21" y2="6"></line>
+          <line x1="8" y1="12" x2="21" y2="12"></line>
+          <line x1="8" y1="18" x2="21" y2="18"></line>
+          <line x1="3" y1="6" x2="3.01" y2="6"></line>
+          <line x1="3" y1="12" x2="3.01" y2="12"></line>
+          <line x1="3" y1="18" x2="3.01" y2="18"></line>
+        </svg>
+        <span data-i18n="generateKeyPointsBtn">Generate Key Points</span>
+      </button>
       <div id="keyPointsContent" class="ocs-content"></div>
     </div>
   </div>
@@ -130,6 +140,23 @@
         <span data-i18n="quizGenerateBtn">Generate Quiz</span>
       </button>
       <div id="quizContent" class="ocs-quiz-content"></div>
+    </div>
+  </div>
+
+  <!-- Dialogue Section -->
+  <div id="dialogueSection" class="ocs-dialogue-section">
+    <div class="ocs-result-section">
+      <div class="ocs-section-header">
+        <h2 data-i18n="dialogueHeading">Dialogue Format</h2>
+      </div>
+      <p class="ocs-dialogue-description" data-i18n="dialogueDescription">Understand through engaging conversation — dynamic characters bring the content to life.</p>
+      <button id="generateDialogueBtn" class="ocs-secondary-btn ocs-dialogue-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span data-i18n="dialogueGenerateBtn">Generate Dialogue</span>
+      </button>
+      <div id="dialogueContent" class="ocs-dialogue-content"></div>
     </div>
   </div>
 

@@ -23,6 +23,14 @@
     "message": "Puntos clave",
     "description": "Encabezado de la sección de puntos clave"
   },
+  "generateTldrBtn": {
+    "message": "Generar TL;DR",
+    "description": "Botón para generar TL;DR"
+  },
+  "generateKeyPointsBtn": {
+    "message": "Generar puntos clave",
+    "description": "Botón para generar puntos clave"
+  },
   "customPromptHeading": {
     "message": "Hacer una pregunta sobre esta página",
     "description": "Encabezado de la sección de prompt personalizado"
@@ -198,6 +206,22 @@
   "quizTapToReveal": {
     "message": "Haz clic para ver la respuesta",
     "description": "Tooltip para la pregunta del quiz"
+  },
+  "dialogueHeading": {
+    "message": "Formato de diálogo",
+    "description": "Encabezado de la sección de diálogo"
+  },
+  "dialogueDescription": {
+    "message": "Comprende a través de una conversación atractiva — personajes dinámicos dan vida al contenido.",
+    "description": "Descripción de la sección de diálogo"
+  },
+  "dialogueGenerateBtn": {
+    "message": "Generar diálogo",
+    "description": "Botón para generar diálogo"
+  },
+  "cancelBtn": {
+    "message": "Cancelar",
+    "description": "Botón para cancelar generación"
   },
   "voiceSelect": {
     "message": "Voz",
