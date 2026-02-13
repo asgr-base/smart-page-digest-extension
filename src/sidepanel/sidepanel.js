@@ -15,7 +15,6 @@
 
   // --- DOM References ---
   var el = {
-    summarizeBtn: document.getElementById('summarizeBtn'),
     settingsBtn: document.getElementById('settingsBtn'),
     langSelect: document.getElementById('langSelect'),
     statusBanner: document.getElementById('statusBanner'),
@@ -24,8 +23,10 @@
     charCount: document.getElementById('charCount'),
     resultsArea: document.getElementById('resultsArea'),
     tldrSection: document.getElementById('tldrSection'),
+    generateTldrBtn: document.getElementById('generateTldrBtn'),
     tldrContent: document.getElementById('tldrContent'),
     keyPointsSection: document.getElementById('keyPointsSection'),
+    generateKeyPointsBtn: document.getElementById('generateKeyPointsBtn'),
     keyPointsContent: document.getElementById('keyPointsContent'),
     customPromptInput: document.getElementById('customPromptInput'),
     customPromptBtn: document.getElementById('customPromptBtn'),
@@ -34,10 +35,12 @@
     loadingOverlay: document.getElementById('loadingOverlay'),
     loadingText: document.getElementById('loadingText'),
     toast: document.getElementById('toast'),
-    shortcutHint: document.getElementById('shortcutHint'),
     quizSection: document.getElementById('quizSection'),
     generateQuizBtn: document.getElementById('generateQuizBtn'),
     quizContent: document.getElementById('quizContent'),
+    dialogueSection: document.getElementById('dialogueSection'),
+    generateDialogueBtn: document.getElementById('generateDialogueBtn'),
+    dialogueContent: document.getElementById('dialogueContent'),
     copyPageInfoBtn: document.getElementById('copyPageInfoBtn'),
     speechSpeedBtn: document.getElementById('speechSpeedBtn'),
     voiceSelect: document.getElementById('voiceSelect')
@@ -61,7 +64,6 @@
     applyI18n();
     await checkApiAvailability();
     bindEvents();
-    showShortcutHint();
 
     // Track current tab and check accessibility
     var tabs = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -69,13 +71,17 @@
       currentTabId = tabs[0].id;
       syncZoomWithTab(tabs[0].id);
       var accessible = await updateTabAccessibility(tabs[0].id);
-      if (!accessible) return; // Don't auto-summarize inaccessible pages
-    }
+      if (!accessible) return;
 
-    // Always auto-summarize on panel first open (regardless of autoSummarize setting).
-    // The autoSummarize setting controls tab-switch behavior only.
-    if (!el.summarizeBtn.disabled) {
-      handleSummarize();
+      // Auto-extract page data on panel open (but don't generate summaries)
+      try {
+        extractedPageData = await extractText();
+        if (extractedPageData && extractedPageData.text) {
+          showPageInfo(extractedPageData);
+        }
+      } catch (err) {
+        console.warn('[OCS] Auto page data extraction failed:', err.message);
+      }
     }
   }
 
@@ -303,17 +309,20 @@
     try {
       var tab = await chrome.tabs.get(tabId);
       if (!isAccessibleUrl(tab.url)) {
-        el.summarizeBtn.disabled = true;
+        el.generateTldrBtn.disabled = true;
+        el.generateKeyPointsBtn.disabled = true;
         showStatus('info', chrome.i18n.getMessage('inaccessiblePage') ||
           'Cannot access this page. Summary is not available for browser internal pages.');
         return false;
       }
     } catch (err) {
       // Tab may not exist anymore
-      el.summarizeBtn.disabled = true;
+      el.generateTldrBtn.disabled = true;
+      el.generateKeyPointsBtn.disabled = true;
       return false;
     }
-    el.summarizeBtn.disabled = false;
+    el.generateTldrBtn.disabled = false;
+    el.generateKeyPointsBtn.disabled = false;
     hideStatus();
     return true;
   }
@@ -330,17 +339,33 @@
 
   function restoreFromCache(tabId) {
     var cached = tabCache[tabId];
+    console.log('[Cache] Restore for tab', tabId, 'cached:', !!cached);
     if (!cached) return false;
 
+    console.log('[Cache] Has TL;DR:', !!cached.tldr, 'Has Key Points:', !!cached.keyPoints);
     extractedPageData = cached.pageData;
     showPageInfo(cached.pageData);
-    showSections(cached.summaryType);
 
+    // Show results area and sections (always keep them visible so users can generate content)
+    el.resultsArea.classList.remove('ocs-hidden');
+    el.tldrSection.classList.remove('ocs-hidden');
+    el.keyPointsSection.classList.remove('ocs-hidden');
+
+    // Restore content if available, otherwise clear
     if (cached.tldr) {
+      console.log('[Cache] Restoring TL;DR, length:', cached.tldr.length);
       renderMarkdownSafe(cached.tldr, el.tldrContent);
+    } else {
+      console.log('[Cache] No TL;DR to restore');
+      clearElement(el.tldrContent);
     }
+
     if (cached.keyPoints) {
+      console.log('[Cache] Restoring Key Points, length:', cached.keyPoints.length);
       renderKeyPointsWithImportance(cached.keyPoints, el.keyPointsContent);
+    } else {
+      console.log('[Cache] No Key Points to restore');
+      clearElement(el.keyPointsContent);
     }
 
     // Restore or clear quiz content
@@ -349,6 +374,13 @@
       rebindQuizCards();
     } else {
       clearElement(el.quizContent);
+    }
+
+    // Restore or clear dialogue content
+    if (cached.dialogueHtml) {
+      el.dialogueContent.innerHTML = cached.dialogueHtml;
+    } else {
+      clearElement(el.dialogueContent);
     }
 
     // Restore or clear chat history
@@ -368,17 +400,19 @@
     el.pageInfo.classList.add('ocs-hidden');
     clearElement(el.chatHistory);
     clearElement(el.quizContent);
+    clearElement(el.dialogueContent);
   }
 
-  // Save quiz and chat state for a tab before switching away.
+  // Save quiz, dialogue, and chat state for a tab before switching away.
   function saveCurrentTabQuizChat(tabId) {
     if (!tabId) return;
     var hasQuiz = el.quizContent.childNodes.length > 0;
+    var hasDialogue = el.dialogueContent.childNodes.length > 0;
     var hasChat = el.chatHistory.childNodes.length > 0;
-    if (!hasQuiz && !hasChat) return;
+    if (!hasQuiz && !hasDialogue && !hasChat) return;
 
     if (!tabCache[tabId]) {
-      // Create a minimal cache entry for quiz/chat-only tabs (no prior summarization)
+      // Create a minimal cache entry for quiz/dialogue/chat-only tabs (no prior summarization)
       tabCache[tabId] = {
         pageData: extractedPageData,
         summaryType: currentSettings.summaryType,
@@ -387,6 +421,7 @@
       };
     }
     tabCache[tabId].quizHtml = hasQuiz ? el.quizContent.innerHTML : null;
+    tabCache[tabId].dialogueHtml = hasDialogue ? el.dialogueContent.innerHTML : null;
     tabCache[tabId].chatHtml = hasChat ? el.chatHistory.innerHTML : null;
   }
 
@@ -426,9 +461,14 @@
 
     if (!restoreFromCache(tabId)) {
       showFreshState();
-      // Auto-summarize for new tab if setting is on
-      if (currentSettings.autoSummarize && !el.summarizeBtn.disabled) {
-        handleSummarize();
+      // Extract page data for new tab
+      try {
+        extractedPageData = await extractText();
+        if (extractedPageData && extractedPageData.text) {
+          showPageInfo(extractedPageData);
+        }
+      } catch (err) {
+        console.warn('[OCS] Auto page data extraction failed:', err.message);
       }
     }
   }
@@ -436,77 +476,258 @@
   // --- Summarization ---
   var pendingTranslator = null; // Pre-created translator (within user gesture context)
   var untranslatedResults = null; // Stores English results when translation model download needed
+  var isSummarizingTldr = false;
+  var isSummarizingKeyPoints = false;
+  var isGeneratingQuiz = false;
+  var isGeneratingDialogue = false;
+  var isAnsweringCustomPrompt = false;
+  var tldrAbortController = null;
+  var keyPointsAbortController = null;
+  var quizAbortController = null;
+  var dialogueAbortController = null;
+  var customPromptAbortController = null;
 
-  async function handleSummarize(hasUserGesture) {
-    if (isSummarizing) return;
-    isSummarizing = true;
-    stopReadAloud();
-    showLoading(true, chrome.i18n.getMessage('extractingText') || 'Extracting page content...');
-    clearResults();
-    untranslatedResults = null; // Reset translation retry state
-
-    // Capture the tab ID at the start of summarization
-    var tabId = currentTabId;
-
-    // Pre-create Translator within user gesture context to avoid NotAllowedError.
-    // Chrome requires a user gesture for model downloads ("downloadable"/"downloading").
-    // Only attempt when called from a direct user click, not from auto-summarize.
-    var userSelectedLang = el.langSelect.value;
-    var preOutputLang = userSelectedLang !== 'auto' ? userSelectedLang : currentSettings.outputLanguage;
-    if (hasUserGesture && preOutputLang !== 'en' && isTranslatorAvailable()) {
-      pendingTranslator = createTranslator(preOutputLang);
-    } else {
-      pendingTranslator = null;
+  // Generate TL;DR summary only
+  async function handleGenerateTldr() {
+    // Check if already generating - if so, cancel
+    if (isSummarizingTldr) {
+      if (tldrAbortController) {
+        tldrAbortController.abort();
+        tldrAbortController = null;
+      }
+      clearElement(el.tldrContent);
+      el.tldrContent.textContent = chrome.i18n.getMessage('notEnoughText') || 'Generation cancelled';
+      el.generateTldrBtn.querySelector('span').textContent = chrome.i18n.getMessage('generateTldrBtn') || 'Generate TL;DR';
+      el.generateTldrBtn.disabled = false;
+      isSummarizingTldr = false;
+      return;
     }
 
+    isSummarizingTldr = true;
+    tldrAbortController = new AbortController();
+    el.generateTldrBtn.querySelector('span').textContent = chrome.i18n.getMessage('cancelBtn') || 'Cancel';
+    el.generateTldrBtn.disabled = false; // Keep enabled for cancellation
+    clearElement(el.tldrContent);
+    showSectionLoading(el.tldrContent);
+
+    // Extract page data if not already available
+    var pageData = await ensurePageData();
+    if (!pageData) {
+      clearElement(el.tldrContent);
+      el.tldrContent.textContent = chrome.i18n.getMessage('notEnoughText') || 'Not enough text content.';
+      el.generateTldrBtn.querySelector('span').textContent = chrome.i18n.getMessage('generateTldrBtn') || 'Generate TL;DR';
+      el.generateTldrBtn.disabled = false;
+      isSummarizingTldr = false;
+      tldrAbortController = null;
+      return;
+    }
+
+    var outputLang = getOutputLanguage(extractedPageData.lang);
+    var sharedContext = 'Page title: ' + extractedPageData.title;
+
     try {
-      extractedPageData = await extractText();
-      if (!extractedPageData || !extractedPageData.text) {
-        throw new Error('extractionFailed');
+      var createOptions = {
+        type: 'tldr',
+        format: 'markdown',
+        length: currentSettings.summaryLength,
+        expectedInputLanguages: ['en', 'ja', 'es'],
+        outputLanguage: outputLang,
+        sharedContext: sharedContext,
+        signal: tldrAbortController.signal,
+        monitor: function (m) {
+          m.addEventListener('downloadprogress', function (e) {
+            var pct = Math.round((e.loaded / e.total) * 100);
+            el.tldrContent.textContent = 'Downloading model: ' + pct + '%';
+          });
+        }
+      };
+
+      var tldrResult = await runSummarizer(createOptions, extractedPageData.text, el.tldrContent);
+
+      // Update cache
+      if (currentTabId) {
+        if (!tabCache[currentTabId]) {
+          tabCache[currentTabId] = {
+            pageData: extractedPageData,
+            summaryType: currentSettings.summaryType,
+            tldr: null,
+            keyPoints: null
+          };
+        }
+        tabCache[currentTabId].tldr = tldrResult;
+        console.log('[Cache] TL;DR saved for tab', currentTabId, 'length:', tldrResult ? tldrResult.length : 0);
       }
-      showPageInfo(extractedPageData);
-
-      var outputLang = getOutputLanguage(extractedPageData.lang);
-      var pageLangBase = extractedPageData.lang
-        ? extractedPageData.lang.split('-')[0].toLowerCase() : null;
-      // Only use cross-language translation path when Translator API is available.
-      // Without it, fall back to Summarizer API's native outputLanguage parameter.
-      var needsCrossLang = userSelectedLang !== 'auto' &&
-        pageLangBase !== outputLang && isTranslatorAvailable();
-
-      showLoading(true, chrome.i18n.getMessage('summarizing') || 'Generating summary...');
-
-      var sharedContext = 'Page title: ' + extractedPageData.title;
-
-      var results;
-      if (needsCrossLang && ('LanguageModel' in self)) {
-        results = await summarizeWithPromptApi(extractedPageData.text, outputLang, sharedContext);
-      } else {
-        results = await summarizeWithSummarizerApi(extractedPageData.text, sharedContext, outputLang);
-      }
-
-      // Show translation download banner if translation model wasn't available
-      if (untranslatedResults) {
-        showTranslationDownloadBanner();
-      }
-
-      // Cache results for this tab
-      if (tabId) {
-        saveToCache(tabId, extractedPageData, currentSettings.summaryType, results.tldr, results.keyPoints);
-      }
-
     } catch (err) {
-      showStatus('error', getErrorMessage(err));
-    } finally {
-      showLoading(false);
-      isSummarizing = false;
-      // Clean up pre-created translator
-      if (pendingTranslator) {
-        pendingTranslator.then(function (t) {
-          if (t && t.destroy) t.destroy();
-        }).catch(function () {});
-        pendingTranslator = null;
+      // Check for abort-related errors (name or message contains 'abort')
+      var isAborted = err.name === 'AbortError' ||
+                      err.message === 'AbortError' ||
+                      (err.message && err.message.toLowerCase().includes('abort'));
+      if (isAborted) {
+        clearElement(el.tldrContent);
+        el.tldrContent.textContent = 'Generation cancelled';
+      } else {
+        clearElement(el.tldrContent);
+        el.tldrContent.textContent = 'Error: ' + (err.message || 'Failed to generate TL;DR');
       }
+    } finally {
+      el.generateTldrBtn.querySelector('span').textContent = chrome.i18n.getMessage('generateTldrBtn') || 'Generate TL;DR';
+      el.generateTldrBtn.disabled = false;
+      isSummarizingTldr = false;
+      tldrAbortController = null;
+    }
+  }
+
+  // Generate Key Points only
+  async function handleGenerateKeyPoints() {
+    // Check if already generating - if so, cancel
+    if (isSummarizingKeyPoints) {
+      if (keyPointsAbortController) {
+        keyPointsAbortController.abort();
+        keyPointsAbortController = null;
+      }
+      clearElement(el.keyPointsContent);
+      el.keyPointsContent.textContent = 'Generation cancelled';
+      el.generateKeyPointsBtn.querySelector('span').textContent = chrome.i18n.getMessage('generateKeyPointsBtn') || 'Generate Key Points';
+      el.generateKeyPointsBtn.disabled = false;
+      isSummarizingKeyPoints = false;
+      return;
+    }
+
+    isSummarizingKeyPoints = true;
+    keyPointsAbortController = new AbortController();
+    el.generateKeyPointsBtn.querySelector('span').textContent = chrome.i18n.getMessage('cancelBtn') || 'Cancel';
+    el.generateKeyPointsBtn.disabled = false; // Keep enabled for cancellation
+    clearElement(el.keyPointsContent);
+    showSectionLoading(el.keyPointsContent);
+
+    // Extract page data if not already available
+    var pageData = await ensurePageData();
+    if (!pageData) {
+      clearElement(el.keyPointsContent);
+      el.keyPointsContent.textContent = chrome.i18n.getMessage('notEnoughText') || 'Not enough text content.';
+      el.generateKeyPointsBtn.querySelector('span').textContent = chrome.i18n.getMessage('generateKeyPointsBtn') || 'Generate Key Points';
+      el.generateKeyPointsBtn.disabled = false;
+      isSummarizingKeyPoints = false;
+      keyPointsAbortController = null;
+      return;
+    }
+
+    var outputLang = getOutputLanguage(extractedPageData.lang);
+    var sharedContext = 'Page title: ' + extractedPageData.title;
+
+    try {
+      // Use Prompt API for importance-tagged key points when possible
+      if ('LanguageModel' in self) {
+        var promptText = extractedPageData.text.length > config.TEXT_LIMITS.PROMPT_API_MAX_CHARS
+          ? extractedPageData.text.substring(0, config.TEXT_LIMITS.PROMPT_API_MAX_CHARS) + config.TEXT_LIMITS.TRUNCATION_SUFFIX
+          : extractedPageData.text;
+        var kpPrompt = 'Summarize the following text as key points (3-7 bullet points).' +
+          '\nEach bullet MUST start with an importance tag: [HIGH], [MEDIUM], or [LOW].' +
+          '\nFormat: - [HIGH] Most important point here\n\n' +
+          sharedContext +
+          '\n\nText:\n' + promptText;
+        try {
+          var keyPointsResult = await runPromptApi(
+            'You are a summarization assistant.', kpPrompt, el.keyPointsContent, 'en', keyPointsAbortController ? keyPointsAbortController.signal : undefined
+          );
+
+          // Translate if needed
+          if (outputLang !== 'en' && keyPointsResult && isTranslatorAvailable()) {
+            if (looksLikeEnglish(keyPointsResult)) {
+              showTranslatingIndicator(el.keyPointsContent);
+              keyPointsResult = await translateKeyPointsIfNeeded(keyPointsResult, outputLang);
+            }
+          }
+
+          keyPointsResult = repairImportanceTags(keyPointsResult);
+          renderKeyPointsWithImportance(keyPointsResult, el.keyPointsContent);
+
+          // Update cache
+          if (currentTabId) {
+            if (!tabCache[currentTabId]) {
+              tabCache[currentTabId] = {
+                pageData: extractedPageData,
+                summaryType: currentSettings.summaryType,
+                tldr: null,
+                keyPoints: null
+              };
+            }
+            tabCache[currentTabId].keyPoints = keyPointsResult;
+            console.log('[Cache] Key Points saved for tab', currentTabId, 'length:', keyPointsResult ? keyPointsResult.length : 0);
+          }
+        } catch (err) {
+          if (err.message === 'AbortError') {
+            throw err;
+          }
+          console.warn('Prompt API key points failed, falling back to Summarizer:', err);
+          // Fallback to Summarizer API
+          var createOptions = {
+            type: 'key-points',
+            format: 'markdown',
+            length: currentSettings.summaryLength,
+            expectedInputLanguages: ['en', 'ja', 'es'],
+            outputLanguage: outputLang,
+            sharedContext: sharedContext,
+            signal: keyPointsAbortController ? keyPointsAbortController.signal : undefined
+          };
+          var kpResult = await runSummarizer(createOptions, extractedPageData.text, el.keyPointsContent);
+
+          // Update cache
+          if (currentTabId) {
+            if (!tabCache[currentTabId]) {
+              tabCache[currentTabId] = {
+                pageData: extractedPageData,
+                summaryType: currentSettings.summaryType,
+                tldr: null,
+                keyPoints: null
+              };
+            }
+            tabCache[currentTabId].keyPoints = kpResult;
+          }
+        }
+      } else {
+        // No Prompt API: use Summarizer API
+        var createOptions = {
+          type: 'key-points',
+          format: 'markdown',
+          length: currentSettings.summaryLength,
+          expectedInputLanguages: ['en', 'ja', 'es'],
+          outputLanguage: outputLang,
+          sharedContext: sharedContext,
+          signal: keyPointsAbortController ? keyPointsAbortController.signal : undefined
+        };
+        var kpResult = await runSummarizer(createOptions, extractedPageData.text, el.keyPointsContent);
+
+        // Update cache
+        if (currentTabId) {
+          if (!tabCache[currentTabId]) {
+            tabCache[currentTabId] = {
+              pageData: extractedPageData,
+              summaryType: currentSettings.summaryType,
+              tldr: null,
+              keyPoints: null
+            };
+          }
+          tabCache[currentTabId].keyPoints = kpResult;
+        }
+      }
+    } catch (err) {
+      // Check for abort-related errors (name or message contains 'abort')
+      var isAborted = err.name === 'AbortError' ||
+                      err.message === 'AbortError' ||
+                      (err.message && err.message.toLowerCase().includes('abort'));
+      if (isAborted) {
+        clearElement(el.keyPointsContent);
+        el.keyPointsContent.textContent = 'Generation cancelled';
+      } else {
+        clearElement(el.keyPointsContent);
+        el.keyPointsContent.textContent = 'Error: ' + (err.message || 'Failed to generate key points');
+      }
+    } finally {
+      el.generateKeyPointsBtn.querySelector('span').textContent = chrome.i18n.getMessage('generateKeyPointsBtn') || 'Generate Key Points';
+      el.generateKeyPointsBtn.disabled = false;
+      isSummarizingKeyPoints = false;
+      keyPointsAbortController = null;
     }
   }
 
@@ -605,7 +826,9 @@
     for (var i = 0; i < attempts.length; i++) {
       var summarizer = await Summarizer.create(options);
       try {
-        var summary = await summarizer.summarize(attempts[i]);
+        // Pass signal to summarize() method as well
+        var summarizeOptions = options.signal ? { signal: options.signal } : undefined;
+        var summary = await summarizer.summarize(attempts[i], summarizeOptions);
         if (summary) {
           renderMarkdownSafe(summary, targetElement);
           return summary;
@@ -614,6 +837,13 @@
           return null;
         }
       } catch (err) {
+        // Check for abort-related errors and rethrow
+        var isAborted = err.name === 'AbortError' ||
+                        err.message === 'AbortError' ||
+                        (err.message && err.message.toLowerCase().includes('abort'));
+        if (isAborted) {
+          throw err; // Rethrow abort errors to outer catch
+        }
         // Retry with smaller text if "too large" and more attempts remain
         if (/too large/i.test(err.message || '') && i < attempts.length - 1) {
           continue;
@@ -714,17 +944,22 @@
     return results;
   }
 
-  async function runPromptApi(systemPrompt, prompt, targetElement, outputLanguage) {
+  async function runPromptApi(systemPrompt, prompt, targetElement, outputLanguage, signal) {
     var lang = outputLanguage || 'en';
-    var session = await LanguageModel.create({
+    var createOptions = {
       systemPrompt: systemPrompt,
       expectedInputs: [{ type: 'text' }],
       expectedOutputs: [{ type: 'text', languages: [lang] }],
       outputLanguage: lang
-    });
+    };
+    if (signal) {
+      createOptions.signal = signal;
+    }
+    var session = await LanguageModel.create(createOptions);
     var fullText = '';
     try {
-      var stream = session.promptStreaming(prompt);
+      var promptOptions = signal ? { signal: signal } : undefined;
+      var stream = session.promptStreaming(prompt, promptOptions);
       // Chrome's promptStreaming returns cumulative chunks (pre-131) or delta chunks (131+).
       // Auto-detect on the second chunk: if it starts with fullText, it's cumulative.
       var isCumulative = null;
@@ -1070,7 +1305,24 @@
   async function handleGenerateQuiz() {
     if (!('LanguageModel' in self)) return;
 
-    el.generateQuizBtn.disabled = true;
+    // Check if already generating - if so, cancel
+    if (isGeneratingQuiz) {
+      if (quizAbortController) {
+        quizAbortController.abort();
+        quizAbortController = null;
+      }
+      clearElement(el.quizContent);
+      el.quizContent.textContent = 'Generation cancelled';
+      el.generateQuizBtn.querySelector('span').textContent = chrome.i18n.getMessage('quizGenerateBtn') || 'Generate Quiz';
+      el.generateQuizBtn.disabled = false;
+      isGeneratingQuiz = false;
+      return;
+    }
+
+    isGeneratingQuiz = true;
+    quizAbortController = new AbortController();
+    el.generateQuizBtn.querySelector('span').textContent = chrome.i18n.getMessage('cancelBtn') || 'Cancel';
+    el.generateQuizBtn.disabled = false; // Keep enabled for cancellation
     clearElement(el.quizContent);
     showSectionLoading(el.quizContent);
 
@@ -1079,7 +1331,10 @@
     if (!pageData) {
       clearElement(el.quizContent);
       el.quizContent.textContent = chrome.i18n.getMessage('notEnoughText') || 'Not enough text content.';
+      el.generateQuizBtn.querySelector('span').textContent = chrome.i18n.getMessage('quizGenerateBtn') || 'Generate Quiz';
       el.generateQuizBtn.disabled = false;
+      isGeneratingQuiz = false;
+      quizAbortController = null;
       return;
     }
 
@@ -1093,7 +1348,8 @@
         systemPrompt: 'You are a quiz generator that always writes in ' + quizLangEN + '.',
         expectedInputs: [{ type: 'text' }],
         expectedOutputs: [{ type: 'text', languages: [resolvedLang] }],
-        outputLanguage: resolvedLang
+        outputLanguage: resolvedLang,
+        signal: quizAbortController.signal
       });
       try {
         var prompt = 'Generate exactly 3 comprehension questions with short answers in ' + quizLangEN + '.\n' +
@@ -1106,7 +1362,7 @@
           'A3: [answer]\n\n' +
           'Text:\n' + extractedPageData.text.substring(0, 5000);
 
-        var result = await session.prompt(prompt);
+        var result = await session.prompt(prompt, { signal: quizAbortController.signal });
         if (result) {
           renderQuiz(result);
         }
@@ -1114,10 +1370,21 @@
         session.destroy();
       }
     } catch (err) {
-      clearElement(el.quizContent);
-      el.quizContent.textContent = 'Quiz generation failed: ' + err.message;
+      // Check for abort-related errors (name or message contains 'abort')
+      var isAborted = err.name === 'AbortError' ||
+                      (err.message && err.message.toLowerCase().includes('abort'));
+      if (isAborted) {
+        clearElement(el.quizContent);
+        el.quizContent.textContent = 'Generation cancelled';
+      } else {
+        clearElement(el.quizContent);
+        el.quizContent.textContent = 'Quiz generation failed: ' + err.message;
+      }
     } finally {
+      el.generateQuizBtn.querySelector('span').textContent = chrome.i18n.getMessage('quizGenerateBtn') || 'Generate Quiz';
       el.generateQuizBtn.disabled = false;
+      isGeneratingQuiz = false;
+      quizAbortController = null;
     }
   }
 
@@ -1190,10 +1457,187 @@
     }
   }
 
+  // --- Dialogue Generation ---
+  async function handleGenerateDialogue() {
+    if (!('LanguageModel' in self)) return;
+
+    // Check if already generating - if so, cancel
+    if (isGeneratingDialogue) {
+      if (dialogueAbortController) {
+        dialogueAbortController.abort();
+        dialogueAbortController = null;
+      }
+      clearElement(el.dialogueContent);
+      el.dialogueContent.textContent = 'Generation cancelled';
+      el.generateDialogueBtn.querySelector('span').textContent = chrome.i18n.getMessage('dialogueGenerateBtn') || 'Generate Dialogue';
+      el.generateDialogueBtn.disabled = false;
+      isGeneratingDialogue = false;
+      return;
+    }
+
+    isGeneratingDialogue = true;
+    dialogueAbortController = new AbortController();
+    el.generateDialogueBtn.querySelector('span').textContent = chrome.i18n.getMessage('cancelBtn') || 'Cancel';
+    el.generateDialogueBtn.disabled = false; // Keep enabled for cancellation
+    clearElement(el.dialogueContent);
+    showSectionLoading(el.dialogueContent);
+
+    // Extract page data if not already available
+    var pageData = await ensurePageData();
+    if (!pageData) {
+      clearElement(el.dialogueContent);
+      el.dialogueContent.textContent = chrome.i18n.getMessage('notEnoughText') || 'Not enough text content.';
+      el.generateDialogueBtn.querySelector('span').textContent = chrome.i18n.getMessage('dialogueGenerateBtn') || 'Generate Dialogue';
+      el.generateDialogueBtn.disabled = false;
+      isGeneratingDialogue = false;
+      dialogueAbortController = null;
+      return;
+    }
+
+    var pageLang = extractedPageData.lang || null;
+    var resolvedLang = getOutputLanguage(pageLang);
+    var dialogueLangEN = (el.langSelect.value !== 'auto') ?
+      (config.LANGUAGE_NAMES_FOR_PROMPT[resolvedLang] || 'English') : 'the same language as the text';
+
+    try {
+      var session = await LanguageModel.create({
+        systemPrompt: 'You are a dialogue content generator. You choose appropriate characters based on article content and create engaging conversations with impactful openings and humorous endings.',
+        expectedInputs: [{ type: 'text' }],
+        expectedOutputs: [{ type: 'text', languages: [resolvedLang] }],
+        outputLanguage: resolvedLang,
+        signal: dialogueAbortController.signal
+      });
+      try {
+        // Build language instruction
+        var langInstruction = '';
+        if (resolvedLang === 'ja') {
+          langInstruction = '重要: すべての対話を日本語で生成してください。登場人物名も日本語の役割名（例: 開発者、批評家、記者）を使用してください。\n\n';
+        } else if (resolvedLang === 'es') {
+          langInstruction = 'Importante: Genera todo el diálogo en español. Usa nombres de roles en español (ejemplo: Desarrollador, Crítico, Periodista).\n\n';
+        } else {
+          langInstruction = 'Important: Generate all dialogue in English. Use role names in English (example: Developer, Critic, Reporter).\n\n';
+        }
+
+        var prompt = langInstruction +
+          'Read the following page content and create a dialogue between 2 characters.\n\n' +
+          '【Character Selection - CRITICAL】\n' +
+          '1. FIRST: Extract ACTUAL PARTICIPANTS from the article (people, entities, or agents directly involved in the story)\n' +
+          '   - Personal experience/incident → "筆者" (Author) vs the other party mentioned\n' +
+          '   - Interview → "インタビュアー" vs "被インタビュアー" (or their actual names/roles)\n' +
+          '   - Debate/controversy → The two opposing parties by their actual roles\n' +
+          '   - AI incident → "筆者" vs "AI" (or specific AI agent name if mentioned)\n' +
+          '   - Company announcement → "企業" vs "ユーザー" (using actual company name if clear)\n' +
+          '\n' +
+          '2. ONLY if no clear participants exist (pure technical/analytical article):\n' +
+          '   - Fall back to observer roles: "開発者" vs "批評家", "記者" vs "専門家", etc.\n' +
+          '\n' +
+          '3. Use SPECIFIC role names from the article context (NOT generic "Kenji" or "Aiko")\n' +
+          '   - Example: If article mentions "Scott" and "AI agent", use "筆者" and "AI"\n' +
+          '   - Example: If article is by a CEO, use "CEO" instead of generic "筆者"\n\n' +
+          '【Dialogue Requirements】\n' +
+          '- 【Opening】First line must be an impactful statement that hooks the reader\n' +
+          '- Each line: short (1-2 sentences, max 50 chars)\n' +
+          '- Tempo: fast, comic\n' +
+          '- 10-15 exchanges\n' +
+          '- Cover all key points from the article\n' +
+          '- 【Ending】Close with humor or memorable conclusion\n' +
+          '- IMPORTANT: Characters should speak FROM THEIR PERSPECTIVE (not as third-party observers)\n\n' +
+          '【Output Format】\n' +
+          '役割名1: [セリフ]\n' +
+          '役割名2: [セリフ]\n' +
+          '...\n\n' +
+          'Page Title: ' + extractedPageData.title + '\n\n' +
+          'Page Content:\n' + extractedPageData.text.substring(0, 5000);
+
+        var result = await session.prompt(prompt, { signal: dialogueAbortController.signal });
+        if (result) {
+          renderDialogue(result);
+
+          // Update cache
+          if (currentTabId && tabCache[currentTabId]) {
+            tabCache[currentTabId].dialogue = result;
+          }
+        }
+      } finally {
+        session.destroy();
+      }
+    } catch (err) {
+      // Check for abort-related errors (name or message contains 'abort')
+      var isAborted = err.name === 'AbortError' ||
+                      (err.message && err.message.toLowerCase().includes('abort'));
+      if (isAborted) {
+        clearElement(el.dialogueContent);
+        el.dialogueContent.textContent = 'Generation cancelled';
+      } else {
+        clearElement(el.dialogueContent);
+        el.dialogueContent.textContent = 'Dialogue generation failed: ' + err.message;
+      }
+    } finally {
+      el.generateDialogueBtn.querySelector('span').textContent = chrome.i18n.getMessage('dialogueGenerateBtn') || 'Generate Dialogue';
+      el.generateDialogueBtn.disabled = false;
+      isGeneratingDialogue = false;
+      dialogueAbortController = null;
+    }
+  }
+
+  function renderDialogue(dialogueText) {
+    clearElement(el.dialogueContent);
+    var lines = dialogueText.split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      // Match "CharacterName: message" or "CharacterName：message"
+      var match = line.match(/^([^:：]+)[:：]\s*(.+)/);
+      if (!match) continue;
+
+      var speaker = match[1].trim();
+      var message = match[2].trim();
+
+      var bubble = document.createElement('div');
+      bubble.className = 'ocs-dialogue-bubble';
+
+      var speakerDiv = document.createElement('div');
+      speakerDiv.className = 'ocs-dialogue-speaker';
+      speakerDiv.textContent = speaker;
+
+      var messageDiv = document.createElement('div');
+      messageDiv.className = 'ocs-dialogue-message';
+      messageDiv.textContent = message;
+
+      bubble.appendChild(speakerDiv);
+      bubble.appendChild(messageDiv);
+      el.dialogueContent.appendChild(bubble);
+    }
+
+    if (el.dialogueContent.childNodes.length === 0) {
+      el.dialogueContent.textContent = 'Could not parse dialogue format.';
+    }
+  }
+
   // --- Custom Prompt (Chat UI) ---
   async function handleCustomPrompt() {
+    // Check if already generating - if so, cancel
+    if (isAnsweringCustomPrompt) {
+      if (customPromptAbortController) {
+        customPromptAbortController.abort();
+        customPromptAbortController = null;
+      }
+      // Remove last assistant bubble (the one being generated)
+      var lastBubble = el.chatHistory.lastElementChild;
+      if (lastBubble && lastBubble.classList.contains('ocs-assistant')) {
+        el.chatHistory.removeChild(lastBubble);
+      }
+      el.customPromptBtn.querySelector('span').textContent = chrome.i18n.getMessage('askButton') || 'Ask';
+      el.customPromptBtn.disabled = false;
+      isAnsweringCustomPrompt = false;
+      return;
+    }
+
     var promptText = el.customPromptInput.value.trim();
     if (!promptText) return;
+
+    isAnsweringCustomPrompt = true;
+    customPromptAbortController = new AbortController();
 
     // Add user bubble
     var userBubble = document.createElement('div');
@@ -1201,9 +1645,10 @@
     userBubble.textContent = promptText;
     el.chatHistory.appendChild(userBubble);
 
-    // Clear input and disable button
+    // Clear input and change button to cancel
     el.customPromptInput.value = '';
-    el.customPromptBtn.disabled = true;
+    el.customPromptBtn.querySelector('span').textContent = chrome.i18n.getMessage('cancelBtn') || 'Cancel';
+    el.customPromptBtn.disabled = false; // Keep enabled for cancellation
 
     // Add assistant bubble with loading
     var assistantBubble = document.createElement('div');
@@ -1274,7 +1719,7 @@
 
       if (needsTranslation) {
         // Generate in English, then translate to target language
-        var response = await runPromptApi(systemPrompt, fullPrompt, responseContent, 'en');
+        var response = await runPromptApi(systemPrompt, fullPrompt, responseContent, 'en', customPromptAbortController.signal);
         if (response) {
           // Gemini Nano may ignore outputLanguage:'en' and generate in the input language
           // (especially when context contains non-English text like Japanese summaries).
@@ -1302,15 +1747,28 @@
       } else if (outputLang !== 'en' && !isTranslatorAvailable()) {
         // Non-English output but no Translator API: generate directly in target language
         // (best effort — may produce lower quality for non-English pages)
-        await runPromptApi(systemPrompt, fullPrompt, responseContent, outputLang);
+        await runPromptApi(systemPrompt, fullPrompt, responseContent, outputLang, customPromptAbortController.signal);
       } else {
         // English output: generate directly
-        await runPromptApi(systemPrompt, fullPrompt, responseContent, 'en');
+        await runPromptApi(systemPrompt, fullPrompt, responseContent, 'en', customPromptAbortController.signal);
       }
     } catch (err) {
-      responseContent.textContent = getErrorMessage(err);
+      // Check for abort-related errors (name or message contains 'abort')
+      var isAborted = err.name === 'AbortError' ||
+                      (err.message && err.message.toLowerCase().includes('abort'));
+      if (isAborted) {
+        // Remove the assistant bubble on abort
+        if (assistantBubble && assistantBubble.parentNode) {
+          assistantBubble.parentNode.removeChild(assistantBubble);
+        }
+      } else {
+        responseContent.textContent = getErrorMessage(err);
+      }
     } finally {
+      el.customPromptBtn.querySelector('span').textContent = chrome.i18n.getMessage('askButton') || 'Ask';
       el.customPromptBtn.disabled = false;
+      isAnsweringCustomPrompt = false;
+      customPromptAbortController = null;
       el.chatHistory.scrollTop = el.chatHistory.scrollHeight;
     }
   }
@@ -1440,7 +1898,11 @@
   function clearResults() {
     clearElement(el.tldrContent);
     clearElement(el.keyPointsContent);
-    el.resultsArea.classList.add('ocs-hidden');
+    // Keep resultsArea visible so users can generate content on fresh tabs
+    el.resultsArea.classList.remove('ocs-hidden');
+    // Show TL;DR and Key Points sections so generate buttons are accessible
+    el.tldrSection.classList.remove('ocs-hidden');
+    el.keyPointsSection.classList.remove('ocs-hidden');
     hideStatus();
   }
 
@@ -1562,9 +2024,11 @@
 
   // --- Event Binding ---
   function bindEvents() {
-    el.summarizeBtn.addEventListener('click', function () { handleSummarize(true); });
+    el.generateTldrBtn.addEventListener('click', handleGenerateTldr);
+    el.generateKeyPointsBtn.addEventListener('click', handleGenerateKeyPoints);
     el.customPromptBtn.addEventListener('click', handleCustomPrompt);
     el.generateQuizBtn.addEventListener('click', handleGenerateQuiz);
+    el.generateDialogueBtn.addEventListener('click', handleGenerateDialogue);
 
     // Cmd+Enter (Mac) / Ctrl+Enter (Win/Linux) to send
     // Avoids conflicts with IME composition (e.isComposing check)
@@ -1577,19 +2041,7 @@
       }
     });
 
-    // Listen for auto-summarize trigger from background (icon click / keyboard shortcut)
-    chrome.runtime.onMessage.addListener(function (message) {
-      if (message.type === config.MESSAGES.START_SUMMARIZE) {
-        if (currentSettings.autoSummarize && !el.summarizeBtn.disabled) {
-          // Re-check tab accessibility before auto-summarizing
-          if (currentTabId) {
-            updateTabAccessibility(currentTabId).then(function (accessible) {
-              if (accessible) handleSummarize();
-            });
-          }
-        }
-      }
-    });
+    // Note: Auto-summarize removed - users now click individual generate buttons
 
     // Tab switching: restore cached results or show fresh state
     chrome.tabs.onActivated.addListener(function (activeInfo) {
@@ -1608,18 +2060,26 @@
         delete tabCache[tabId];
         if (tabId === currentTabId) {
           showFreshState();
-          // Check if new URL is accessible before auto-summarizing
+          // Check if new URL is accessible
           if (!isAccessibleUrl(changeInfo.url)) {
-            el.summarizeBtn.disabled = true;
+            el.generateTldrBtn.disabled = true;
+            el.generateKeyPointsBtn.disabled = true;
             showStatus('info', chrome.i18n.getMessage('inaccessiblePage') ||
               'Cannot access this page. Summary is not available for browser internal pages.');
             return;
           }
-          el.summarizeBtn.disabled = false;
+          el.generateTldrBtn.disabled = false;
+          el.generateKeyPointsBtn.disabled = false;
           hideStatus();
-          if (currentSettings.autoSummarize) {
-            handleSummarize();
-          }
+          // Extract page data for new URL
+          extractText().then(function (data) {
+            if (data && data.text) {
+              extractedPageData = data;
+              showPageInfo(data);
+            }
+          }).catch(function (err) {
+            console.warn('[OCS] Auto page data extraction failed:', err.message);
+          });
         }
       }
     });

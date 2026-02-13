@@ -23,6 +23,14 @@
     "message": "Key Points",
     "description": "Key points section heading"
   },
+  "generateTldrBtn": {
+    "message": "Generate TL;DR",
+    "description": "Button to generate TL;DR"
+  },
+  "generateKeyPointsBtn": {
+    "message": "Generate Key Points",
+    "description": "Button to generate key points"
+  },
   "customPromptHeading": {
     "message": "Ask a question about this page",
     "description": "Custom prompt section heading"
@@ -198,6 +206,22 @@
   "quizTapToReveal": {
     "message": "Click to reveal answer",
     "description": "Tooltip for quiz question"
+  },
+  "dialogueHeading": {
+    "message": "Dialogue Format",
+    "description": "Dialogue section heading"
+  },
+  "dialogueDescription": {
+    "message": "Understand through engaging conversation — dynamic characters bring the content to life.",
+    "description": "Dialogue section description"
+  },
+  "dialogueGenerateBtn": {
+    "message": "Generate Dialogue",
+    "description": "Button to generate dialogue"
+  },
+  "cancelBtn": {
+    "message": "Cancel",
+    "description": "Button to cancel generation"
   },
   "voiceSelect": {
     "message": "Voice",

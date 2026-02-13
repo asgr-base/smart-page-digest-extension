@@ -23,6 +23,14 @@
     "message": "主要ポイント",
     "description": "主要ポイントセクション見出し"
   },
+  "generateTldrBtn": {
+    "message": "TL;DRを生成",
+    "description": "TL;DR生成ボタン"
+  },
+  "generateKeyPointsBtn": {
+    "message": "主要ポイントを生成",
+    "description": "主要ポイント生成ボタン"
+  },
   "customPromptHeading": {
     "message": "このページについて質問する",
     "description": "カスタムプロンプトセクション見出し"
@@ -198,6 +206,22 @@
   "quizTapToReveal": {
     "message": "クリックして答えを表示",
     "description": "クイズ質問のツールチップ"
+  },
+  "dialogueHeading": {
+    "message": "対話形式で理解する",
+    "description": "対話セクション見出し"
+  },
+  "dialogueDescription": {
+    "message": "魅力的な会話で理解を深める — ダイナミックな登場人物がコンテンツに命を吹き込みます。",
+    "description": "対話セクション説明"
+  },
+  "dialogueGenerateBtn": {
+    "message": "対話を生成",
+    "description": "対話生成ボタン"
+  },
+  "cancelBtn": {
+    "message": "中断",
+    "description": "生成中断ボタン"
   },
   "voiceSelect": {
     "message": "音声",
