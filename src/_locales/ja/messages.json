@@ -212,8 +212,8 @@
     "description": "対話セクション見出し"
   },
   "dialogueDescription": {
-    "message": "魅力的な会話で理解を深める — ダイナミックな登場人物がコンテンツに命を吹き込みます。",
-    "description": "対話セクション説明"
+    "message": "魅力的な会話で理解を深める — 対話形式は認知負荷を軽減し、理解度を向上させます。",
+    "description": "Xu et al. (2022) 及びストーリーテリング研究に基づく対話セクション説明"
   },
   "dialogueGenerateBtn": {
     "message": "対話を生成",

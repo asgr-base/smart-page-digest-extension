@@ -212,8 +212,8 @@
     "description": "Dialogue section heading"
   },
   "dialogueDescription": {
-    "message": "Understand through engaging conversation — dynamic characters bring the content to life.",
-    "description": "Dialogue section description"
+    "message": "Understand through engaging conversation — dialogue format reduces cognitive load and enhances comprehension.",
+    "description": "Dialogue section description based on Xu et al. (2022) and storytelling research"
   },
   "dialogueGenerateBtn": {
     "message": "Generate Dialogue",
