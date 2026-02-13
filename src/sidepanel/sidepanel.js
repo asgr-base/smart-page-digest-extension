@@ -546,6 +546,12 @@
           m.addEventListener('downloadprogress', function (e) {
             var pct = Math.round((e.loaded / e.total) * 100);
             el.tldrContent.textContent = 'Downloading model: ' + pct + '%';
+            // When download completes, restore loading indicator
+            if (pct >= 100) {
+              setTimeout(function() {
+                showSectionLoading(el.tldrContent);
+              }, 100);
+            }
           });
         }
       };
