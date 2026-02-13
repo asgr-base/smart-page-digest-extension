@@ -486,6 +486,12 @@
   var quizAbortController = null;
   var dialogueAbortController = null;
   var customPromptAbortController = null;
+  // Track which tab each generation was started for (to prevent cross-tab contamination)
+  var tldrGeneratingTabId = null;
+  var keyPointsGeneratingTabId = null;
+  var quizGeneratingTabId = null;
+  var dialogueGeneratingTabId = null;
+  var customPromptGeneratingTabId = null;
 
   // Generate TL;DR summary only
   async function handleGenerateTldr() {
@@ -500,10 +506,12 @@
       el.generateTldrBtn.querySelector('span').textContent = chrome.i18n.getMessage('generateTldrBtn') || 'Generate TL;DR';
       el.generateTldrBtn.disabled = false;
       isSummarizingTldr = false;
+      tldrGeneratingTabId = null;
       return;
     }
 
     isSummarizingTldr = true;
+    tldrGeneratingTabId = currentTabId; // Record the tab ID at generation start
     tldrAbortController = new AbortController();
     el.generateTldrBtn.querySelector('span').textContent = chrome.i18n.getMessage('cancelBtn') || 'Cancel';
     el.generateTldrBtn.disabled = false; // Keep enabled for cancellation
@@ -544,18 +552,18 @@
 
       var tldrResult = await runSummarizer(createOptions, extractedPageData.text, el.tldrContent);
 
-      // Update cache
-      if (currentTabId) {
-        if (!tabCache[currentTabId]) {
-          tabCache[currentTabId] = {
+      // Update cache (use the tab ID recorded at generation start, not current tab)
+      if (tldrGeneratingTabId) {
+        if (!tabCache[tldrGeneratingTabId]) {
+          tabCache[tldrGeneratingTabId] = {
             pageData: extractedPageData,
             summaryType: currentSettings.summaryType,
             tldr: null,
             keyPoints: null
           };
         }
-        tabCache[currentTabId].tldr = tldrResult;
-        console.log('[Cache] TL;DR saved for tab', currentTabId, 'length:', tldrResult ? tldrResult.length : 0);
+        tabCache[tldrGeneratingTabId].tldr = tldrResult;
+        console.log('[Cache] TL;DR saved for tab', tldrGeneratingTabId, 'length:', tldrResult ? tldrResult.length : 0);
       }
     } catch (err) {
       // Check for abort-related errors (name or message contains 'abort')
@@ -574,6 +582,7 @@
       el.generateTldrBtn.disabled = false;
       isSummarizingTldr = false;
       tldrAbortController = null;
+      tldrGeneratingTabId = null;
     }
   }
 
@@ -590,10 +599,12 @@
       el.generateKeyPointsBtn.querySelector('span').textContent = chrome.i18n.getMessage('generateKeyPointsBtn') || 'Generate Key Points';
       el.generateKeyPointsBtn.disabled = false;
       isSummarizingKeyPoints = false;
+      keyPointsGeneratingTabId = null;
       return;
     }
 
     isSummarizingKeyPoints = true;
+    keyPointsGeneratingTabId = currentTabId; // Record the tab ID at generation start
     keyPointsAbortController = new AbortController();
     el.generateKeyPointsBtn.querySelector('span').textContent = chrome.i18n.getMessage('cancelBtn') || 'Cancel';
     el.generateKeyPointsBtn.disabled = false; // Keep enabled for cancellation
@@ -642,18 +653,18 @@
           keyPointsResult = repairImportanceTags(keyPointsResult);
           renderKeyPointsWithImportance(keyPointsResult, el.keyPointsContent);
 
-          // Update cache
-          if (currentTabId) {
-            if (!tabCache[currentTabId]) {
-              tabCache[currentTabId] = {
+          // Update cache (use the tab ID recorded at generation start, not current tab)
+          if (keyPointsGeneratingTabId) {
+            if (!tabCache[keyPointsGeneratingTabId]) {
+              tabCache[keyPointsGeneratingTabId] = {
                 pageData: extractedPageData,
                 summaryType: currentSettings.summaryType,
                 tldr: null,
                 keyPoints: null
               };
             }
-            tabCache[currentTabId].keyPoints = keyPointsResult;
-            console.log('[Cache] Key Points saved for tab', currentTabId, 'length:', keyPointsResult ? keyPointsResult.length : 0);
+            tabCache[keyPointsGeneratingTabId].keyPoints = keyPointsResult;
+            console.log('[Cache] Key Points saved for tab', keyPointsGeneratingTabId, 'length:', keyPointsResult ? keyPointsResult.length : 0);
           }
         } catch (err) {
           if (err.message === 'AbortError') {
@@ -672,17 +683,17 @@
           };
           var kpResult = await runSummarizer(createOptions, extractedPageData.text, el.keyPointsContent);
 
-          // Update cache
-          if (currentTabId) {
-            if (!tabCache[currentTabId]) {
-              tabCache[currentTabId] = {
+          // Update cache (use the tab ID recorded at generation start, not current tab)
+          if (keyPointsGeneratingTabId) {
+            if (!tabCache[keyPointsGeneratingTabId]) {
+              tabCache[keyPointsGeneratingTabId] = {
                 pageData: extractedPageData,
                 summaryType: currentSettings.summaryType,
                 tldr: null,
                 keyPoints: null
               };
             }
-            tabCache[currentTabId].keyPoints = kpResult;
+            tabCache[keyPointsGeneratingTabId].keyPoints = kpResult;
           }
         }
       } else {
@@ -698,17 +709,17 @@
         };
         var kpResult = await runSummarizer(createOptions, extractedPageData.text, el.keyPointsContent);
 
-        // Update cache
-        if (currentTabId) {
-          if (!tabCache[currentTabId]) {
-            tabCache[currentTabId] = {
+        // Update cache (use the tab ID recorded at generation start, not current tab)
+        if (keyPointsGeneratingTabId) {
+          if (!tabCache[keyPointsGeneratingTabId]) {
+            tabCache[keyPointsGeneratingTabId] = {
               pageData: extractedPageData,
               summaryType: currentSettings.summaryType,
               tldr: null,
               keyPoints: null
             };
           }
-          tabCache[currentTabId].keyPoints = kpResult;
+          tabCache[keyPointsGeneratingTabId].keyPoints = kpResult;
         }
       }
     } catch (err) {
@@ -728,6 +739,7 @@
       el.generateKeyPointsBtn.disabled = false;
       isSummarizingKeyPoints = false;
       keyPointsAbortController = null;
+      keyPointsGeneratingTabId = null;
     }
   }
 
@@ -1316,10 +1328,12 @@
       el.generateQuizBtn.querySelector('span').textContent = chrome.i18n.getMessage('quizGenerateBtn') || 'Generate Quiz';
       el.generateQuizBtn.disabled = false;
       isGeneratingQuiz = false;
+      quizGeneratingTabId = null;
       return;
     }
 
     isGeneratingQuiz = true;
+    quizGeneratingTabId = currentTabId; // Record the tab ID at generation start
     quizAbortController = new AbortController();
     el.generateQuizBtn.querySelector('span').textContent = chrome.i18n.getMessage('cancelBtn') || 'Cancel';
     el.generateQuizBtn.disabled = false; // Keep enabled for cancellation
@@ -1385,6 +1399,7 @@
       el.generateQuizBtn.disabled = false;
       isGeneratingQuiz = false;
       quizAbortController = null;
+      quizGeneratingTabId = null;
     }
   }
 
@@ -1472,10 +1487,12 @@
       el.generateDialogueBtn.querySelector('span').textContent = chrome.i18n.getMessage('dialogueGenerateBtn') || 'Generate Dialogue';
       el.generateDialogueBtn.disabled = false;
       isGeneratingDialogue = false;
+      dialogueGeneratingTabId = null;
       return;
     }
 
     isGeneratingDialogue = true;
+    dialogueGeneratingTabId = currentTabId; // Record the tab ID at generation start
     dialogueAbortController = new AbortController();
     el.generateDialogueBtn.querySelector('span').textContent = chrome.i18n.getMessage('cancelBtn') || 'Cancel';
     el.generateDialogueBtn.disabled = false; // Keep enabled for cancellation
@@ -1553,9 +1570,9 @@
         if (result) {
           renderDialogue(result);
 
-          // Update cache
-          if (currentTabId && tabCache[currentTabId]) {
-            tabCache[currentTabId].dialogue = result;
+          // Update cache (use the tab ID recorded at generation start, not current tab)
+          if (dialogueGeneratingTabId && tabCache[dialogueGeneratingTabId]) {
+            tabCache[dialogueGeneratingTabId].dialogue = result;
           }
         }
       } finally {
@@ -1577,6 +1594,7 @@
       el.generateDialogueBtn.disabled = false;
       isGeneratingDialogue = false;
       dialogueAbortController = null;
+      dialogueGeneratingTabId = null;
     }
   }
 
@@ -1630,6 +1648,7 @@
       el.customPromptBtn.querySelector('span').textContent = chrome.i18n.getMessage('askButton') || 'Ask';
       el.customPromptBtn.disabled = false;
       isAnsweringCustomPrompt = false;
+      customPromptGeneratingTabId = null;
       return;
     }
 
@@ -1637,6 +1656,7 @@
     if (!promptText) return;
 
     isAnsweringCustomPrompt = true;
+    customPromptGeneratingTabId = currentTabId; // Record the tab ID at generation start
     customPromptAbortController = new AbortController();
 
     // Add user bubble
@@ -1769,6 +1789,7 @@
       el.customPromptBtn.disabled = false;
       isAnsweringCustomPrompt = false;
       customPromptAbortController = null;
+      customPromptGeneratingTabId = null;
       el.chatHistory.scrollTop = el.chatHistory.scrollHeight;
     }
   }
